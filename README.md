@@ -3,6 +3,8 @@ StereoscopicEffects for three.js
 
 This module provides effects to display a 3D scene created with threeJS in **stereoscopy** (multiple methods)
 
+![Logo](logo/module_logo.png)
+
 What does it mean?
 ------------------
 
