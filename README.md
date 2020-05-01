@@ -21,12 +21,12 @@ This module allows to display in a lot of methods easily.
 Which methods are supported?
 ----------------------------
 
-- Side-by-Side:
+- Side-by-Side
     * Parallel view
     * Cross view
     * Parallel anamorphic view
     * Cross anamorphic view
-- Top-and-Bottom");
+- Top-and-Bottom
     * Top-Bottom view
     * Bottom-top view
     * Top-Bottom anamorphic view
