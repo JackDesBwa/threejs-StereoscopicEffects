@@ -355,7 +355,7 @@ StereoscopicEffects.effectsListForm = function(name) {
 	function g(l) {
 		optgroup = document.createElement("optgroup");
 		optgroup.label = l;
-		select.add(optgroup);
+		select.appendChild(optgroup);
 	}
 	function o(l, np) {
 		n = np || n + 1;
