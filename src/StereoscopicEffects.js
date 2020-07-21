@@ -309,8 +309,7 @@ export const StereoscopicEffects = function (renderer, effect) {
 	}
 
 	this.dispose = function () {
-		this.strenderer.dispose();
-		this._effect.dispose();
+		_effect.dispose();
 	};
 
 	this.setEffect = function(effect) {
