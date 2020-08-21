@@ -1,0 +1,19 @@
+{
+  "name": "threejs-StereoscopicEffects-example",
+  "version": "1.0.0",
+  "description": "Example of threejs-StereoscopicEffects",
+  "main": "index.js",
+  "devDependencies": {
+    "@rollup/plugin-alias": "^3.1.1",
+    "rollup": "^2.26.4"
+  },
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "author": "Sample",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "threejs-stereoscopiceffects": "github:JackDesBwa/threejs-StereoscopicEffects"
+  }
+}
