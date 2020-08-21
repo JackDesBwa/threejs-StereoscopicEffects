@@ -67,7 +67,7 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 		uniforms: {
 			"tl": { value: strenderer.bufferL.texture },
 			"tr": { value: strenderer.bufferR.texture },
-			"inv": { value: ((dir & 1) == 1) },
+			"inv": { value: ((dir & 1) == 1) ^ ((dir & 2) == 0) },
 			"dir": { value: ((dir & 2) == 2) },
 			"checkboard": { value: dir >= 4 }
 		},
