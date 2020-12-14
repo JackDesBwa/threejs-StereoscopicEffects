@@ -154,6 +154,18 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 		new Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]).transpose(),
 		new Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ]).transpose()
 	];
+	const _anaglyphFullColors_gm = [
+		new Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
+		new Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
+	];
+	const _anaglyphFullColors_yb = [
+		new Matrix3().fromArray([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
+		new Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
+	];
+	const _anaglyphFullColors_rc = [
+		new Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]).transpose(),
+		new Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ]).transpose()
+	];
 	const _anaglyphDubois_gm = [
 		new Matrix3().fromArray([
 			-0.062, -0.158, -0.039,
@@ -225,9 +237,9 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 		].join("\n")
 	});
 	const _anaglyphs = [
-		_anaglyphGray_rc, _anaglyphHalfColors_rc, _anaglyphDubois_rc,
-		_anaglyphGray_yb, _anaglyphHalfColors_yb, _anaglyphDubois_yb,
-		_anaglyphGray_gm, _anaglyphHalfColors_gm, _anaglyphDubois_gm
+		_anaglyphGray_rc, _anaglyphHalfColors_rc, _anaglyphFullColors_rc, _anaglyphDubois_rc,
+		_anaglyphGray_yb, _anaglyphHalfColors_yb, _anaglyphFullColors_yb, _anaglyphDubois_yb,
+		_anaglyphGray_gm, _anaglyphHalfColors_gm, _anaglyphFullColors_gm, _anaglyphDubois_gm
 	];
 
 	const _mesh = new Mesh(new PlaneBufferGeometry(2, 2), _material);
@@ -336,7 +348,7 @@ export const StereoscopicEffects = function (renderer, effect) {
 		}
 		effect -= 2;
 
-		if (effect < 9) {
+		if (effect < 12) {
 			_effect = new AnaglyphStereoEffect(renderer, strenderer, effect);
 			return;
 		}
@@ -391,12 +403,15 @@ StereoscopicEffects.effectsListForm = function(name) {
 	g("Anaglyph");
 	o("Anaglyph Red/Cyan Gray");
 	o("Anaglyph Red/Cyan Half Colors");
+	o("Anaglyph Red/Cyan Full Colors");
 	o("Anaglyph Red/Cyan Dubois");
 	o("Anaglyph Yellow/Blue Gray");
 	o("Anaglyph Yellow/Blue Half Colors");
+	o("Anaglyph Yellow/Blue Full Colors");
 	o("Anaglyph Yellow/Blue Dubois");
 	o("Anaglyph Green/Magenta Gray");
 	o("Anaglyph Green/Magenta Half Colors");
+	o("Anaglyph Green/Magenta Full Colors");
 	o("Anaglyph Green/Magenta Dubois");
 
 	return select;

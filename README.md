@@ -44,12 +44,15 @@ Which methods are supported?
 - Anaglyph
     * Anaglyph Red/Cyan Gray
     * Anaglyph Red/Cyan Half Colors
+    * Anaglyph Red/Cyan Full Colors
     * Anaglyph Red/Cyan Dubois
     * Anaglyph Yellow/Blue Gray
     * Anaglyph Yellow/Blue Half Colors
+    * Anaglyph Yellow/Blue Full Colors
     * Anaglyph Yellow/Blue Dubois
     * Anaglyph Green/Magenta Gray
     * Anaglyph Green/Magenta Half Colors
+    * Anaglyph Green/Magenta Full Colors
     * Anaglyph Green/Magenta Dubois
 
 And the module renders also the WebXR session if started.
