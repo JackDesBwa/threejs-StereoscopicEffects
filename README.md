@@ -5,6 +5,12 @@ This module provides effects to display a 3D scene created with threeJS in **ste
 
 ![Logo](logo/module_logo.png)
 
+Status
+------
+
+Working
+
+
 What does it mean?
 ------------------
 
