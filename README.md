@@ -54,5 +54,9 @@ Which methods are supported?
     * Anaglyph Green/Magenta Half Colors
     * Anaglyph Green/Magenta Full Colors
     * Anaglyph Green/Magenta Dubois
+- Mirrored
+    * Mirrored left
+    * Mirrored right
+    * Mirrored both
 
 And the module renders also the WebXR session if started.

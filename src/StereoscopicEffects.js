@@ -129,6 +129,70 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 	};
 };
 
+export const MirroredStereoEffect = function (renderer, strenderer, dir) {
+	const _material = new ShaderMaterial({
+		uniforms: {
+			"tl": { value: strenderer.bufferL.texture },
+			"tr": { value: strenderer.bufferR.texture },
+			"invl": { value: ((dir & 1) == 1) },
+			"invr": { value: ((dir & 2) == 2) },
+		},
+		vertexShader: [
+			"varying vec2 vUv;",
+			"void main() {",
+			"	vUv = vec2(uv.x, uv.y);",
+			"	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+			"}"
+		].join("\n"),
+		fragmentShader: [
+			"uniform sampler2D tl;",
+			"uniform sampler2D tr;",
+			"uniform bool invl;",
+			"uniform bool invr;",
+			"varying vec2 vUv;",
+
+			"void main() {",
+			"	vec2 uv = vec2(vUv.x, vUv.y);",
+			"	if (uv.x <= 0.5) {",
+			"		uv.x = uv.x + 0.25;",
+			"		if (invl) uv.x = 1.0 - uv.x;",
+			"		gl_FragColor = texture2D(tl, uv);",
+			"	} else {",
+			"		uv.x = uv.x - 0.25;",
+			"		if (invr) uv.x = 1.0 - uv.x;",
+			"		gl_FragColor = texture2D(tr, uv);",
+			"	}",
+			"}"
+		].join("\n")
+	});
+
+	const _mesh = new Mesh(new PlaneBufferGeometry(2, 2), _material);
+	const _scene = new Scene();
+	_scene.add(_mesh);
+
+	this.render = function(scene, camera) {
+		const originalRenderTarget = renderer.getRenderTarget();
+
+		renderer.setRenderTarget(strenderer.bufferL);
+		renderer.clear();
+		renderer.render(scene, strenderer.stereoCamera.cameraL);
+
+		renderer.setRenderTarget(strenderer.bufferR);
+		renderer.clear();
+		renderer.render(scene, strenderer.stereoCamera.cameraR);
+
+		renderer.setRenderTarget(null);
+		renderer.render(_scene, strenderer.orthoCamera);
+
+		renderer.setRenderTarget(originalRenderTarget);
+	};
+
+	this.dispose = function () {
+		_mesh.geometry.dispose();
+		_material.dispose();
+	};
+};
+
 export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 	const _anaglyphGray_gm = [
 		new Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
@@ -352,6 +416,13 @@ export const StereoscopicEffects = function (renderer, effect) {
 			_effect = new AnaglyphStereoEffect(renderer, strenderer, effect);
 			return;
 		}
+		effect -= 12;
+
+		if (effect < 3) {
+			_effect = new MirroredStereoEffect(renderer, strenderer, effect+1);
+			return;
+		}
+		effect -= 3;
 
 		_effect = new SideBySideStereoEffect(renderer, strenderer);
 	}
@@ -413,6 +484,11 @@ StereoscopicEffects.effectsListForm = function(name) {
 	o("Anaglyph Green/Magenta Half Colors");
 	o("Anaglyph Green/Magenta Full Colors");
 	o("Anaglyph Green/Magenta Dubois");
+
+	g("Mirrored");
+	o("Mirrored left");
+	o("Mirrored right");
+	o("Mirrored both");
 
 	return select;
 };
