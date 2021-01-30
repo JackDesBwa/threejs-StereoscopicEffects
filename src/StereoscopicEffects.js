@@ -394,6 +394,12 @@ export const StereoscopicEffects = function (renderer, effect) {
 
 		_effect.dispose();
 
+		if (effect < 2) {
+			_effect = new SingleViewStereoEffect(renderer, strenderer, effect);
+			return;
+		}
+		effect -= 2;
+
 		if (effect < 8) {
 			_effect = new SideBySideStereoEffect(renderer, strenderer, effect & 1, effect & 2, effect & 4);
 			return;
@@ -406,23 +412,17 @@ export const StereoscopicEffects = function (renderer, effect) {
 		}
 		effect -= 6;
 
-		if (effect < 2) {
-			_effect = new SingleViewStereoEffect(renderer, strenderer, effect);
+		if (effect < 3) {
+			_effect = new MirroredStereoEffect(renderer, strenderer, effect+1);
 			return;
 		}
-		effect -= 2;
+		effect -= 3;
 
 		if (effect < 12) {
 			_effect = new AnaglyphStereoEffect(renderer, strenderer, effect);
 			return;
 		}
 		effect -= 12;
-
-		if (effect < 3) {
-			_effect = new MirroredStereoEffect(renderer, strenderer, effect+1);
-			return;
-		}
-		effect -= 3;
 
 		_effect = new SideBySideStereoEffect(renderer, strenderer);
 	}
@@ -447,6 +447,10 @@ StereoscopicEffects.effectsListForm = function(name) {
 		optgroup.appendChild(option);
 	}
 
+	g("Single view");
+	o("Single view left");
+	o("Single view right");
+
 	g("Side-by-Side");
 	o("Parallel view");
 	o("Cross view");
@@ -467,9 +471,10 @@ StereoscopicEffects.effectsListForm = function(name) {
 	o("Checkerboard 1");
 	o("Checkerboard 2");
 
-	g("Single view");
-	o("Single view left");
-	o("Single view right");
+	g("Mirrored");
+	o("Mirrored left");
+	o("Mirrored right");
+	o("Mirrored both");
 
 	g("Anaglyph");
 	o("Anaglyph Red/Cyan Gray");
@@ -484,11 +489,6 @@ StereoscopicEffects.effectsListForm = function(name) {
 	o("Anaglyph Green/Magenta Half Colors");
 	o("Anaglyph Green/Magenta Full Colors");
 	o("Anaglyph Green/Magenta Dubois");
-
-	g("Mirrored");
-	o("Mirrored left");
-	o("Mirrored right");
-	o("Mirrored both");
 
 	return select;
 };

@@ -21,6 +21,9 @@ This module allows to display in a lot of methods easily.
 Which methods are supported?
 ----------------------------
 
+- Single view [not stereoscopic]
+    * Single view left
+    * Single view right
 - Side-by-Side
     * Parallel view
     * Cross view
@@ -38,9 +41,10 @@ Which methods are supported?
     * Interleaved columns 2
     * Checkerboard 1
     * Checkerboard 2
-- Single view
-    * Single view left
-    * Single view right
+- Mirrored
+    * Mirrored left
+    * Mirrored right
+    * Mirrored both
 - Anaglyph
     * Anaglyph Red/Cyan Gray
     * Anaglyph Red/Cyan Half Colors
@@ -54,9 +58,5 @@ Which methods are supported?
     * Anaglyph Green/Magenta Half Colors
     * Anaglyph Green/Magenta Full Colors
     * Anaglyph Green/Magenta Dubois
-- Mirrored
-    * Mirrored left
-    * Mirrored right
-    * Mirrored both
 
 And the module renders also the WebXR session if started.

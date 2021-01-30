@@ -5,7 +5,7 @@ let scene, cube, camera, renderer, stereofx;
 
 function init() {
 	scene = new THREE.Scene();
-	const defaultEffect = 17; // Anaglyph RC half-colors
+	const defaultEffect = 20; // Anaglyph RC half-colors
 
 	cube = new THREE.Mesh(new THREE.CubeGeometry(2, 2, 2), new THREE.MeshNormalMaterial());
 	scene.add(cube);
