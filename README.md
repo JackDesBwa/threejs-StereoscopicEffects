@@ -1,7 +1,7 @@
 StereoscopicEffects for three.js
 ================================
 
-This module provides effects to display a 3D scene created with threeJS in **stereoscopy** (multiple methods)
+This module provides effects to display a 3D scene created with threeJS in **stereoscopy** (true depth perception) via multiple methods.
 
 ![Logo](logo/module_logo.png)
 
@@ -11,14 +11,14 @@ Status
 Working
 
 
-What does it mean?
-------------------
+What does it do?
+----------------
 
-Displaying 3D scenes with threeJS is very nice, but displaying them so that the users can view them with depth is even better.
+Displaying 3D scenes with threeJS is very nice, but displaying them so that the users can view them with true depth is even better.
 As humans, we have a strong depth perception based on the slight differences of parallax perceived by our eyes.
-In threeJS, the StereoCamera allows to mimic the perception of each eye independantly, but the rest of the work is up to the develpper.
+In threeJS, the StereoCamera allows to mimic the perception of each eye independantly, but the rest of the work is up to the developper.
 
-Furthermore, there exist tens of methods to display stereoscopic content.
+Furthermore, there exist tons of methods to display stereoscopic content.
 Each one has its pro and cons, and displaying one or another depends on which apparatus the user uses or prefers.
 The best is thus to let the users choose their display mode.
 
