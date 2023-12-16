@@ -4,7 +4,7 @@ import {
 	Mesh,
 	NearestFilter,
 	OrthographicCamera,
-	PlaneBufferGeometry,
+	PlaneGeometry,
 	RGBAFormat,
 	Scene,
 	ShaderMaterial,
@@ -101,7 +101,7 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 		].join("\n")
 	});
 
-	const _mesh = new Mesh(new PlaneBufferGeometry(2, 2), _material);
+	const _mesh = new Mesh(new PlaneGeometry(2, 2), _material);
 	const _scene = new Scene();
 	_scene.add(_mesh);
 
@@ -166,7 +166,7 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 		].join("\n")
 	});
 
-	const _mesh = new Mesh(new PlaneBufferGeometry(2, 2), _material);
+	const _mesh = new Mesh(new PlaneGeometry(2, 2), _material);
 	const _scene = new Scene();
 	_scene.add(_mesh);
 
@@ -306,7 +306,7 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 		_anaglyphGray_gm, _anaglyphHalfColors_gm, _anaglyphFullColors_gm, _anaglyphDubois_gm
 	];
 
-	const _mesh = new Mesh(new PlaneBufferGeometry(2, 2), _material);
+	const _mesh = new Mesh(new PlaneGeometry(2, 2), _material);
 	const _scene = new Scene();
 	_scene.add(_mesh);
 

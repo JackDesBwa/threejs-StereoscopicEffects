@@ -1,6 +1,6 @@
 {
   "name": "threejs-stereoscopiceffects",
-  "version": "1.0.0",
+  "version": "1.0.159",
   "description": "StereoscopicEffects for three.js",
   "main": "src/StereoscopicEffects.js",
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/JackDesBwa/threejs-StereoscopicEffects#readme",
   "dependencies": {
-    "three": "^0.130.1"
+    "three": "^0.159.0"
   }
 }
