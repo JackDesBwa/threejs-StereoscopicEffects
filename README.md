@@ -10,6 +10,8 @@ Status
 
 Working
 
+Demo: https://threejs-stereoscopiceffects.desbwa.org/ (from directory `example_jsdelivr`)
+
 
 What does it do?
 ----------------
