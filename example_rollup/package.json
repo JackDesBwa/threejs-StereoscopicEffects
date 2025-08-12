@@ -1,6 +1,6 @@
 {
   "name": "threejs-StereoscopicEffects-example",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Example of threejs-StereoscopicEffects",
   "main": "index.js",
   "devDependencies": {
@@ -14,6 +14,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "three": "^0.179.1",
     "threejs-stereoscopiceffects": "github:JackDesBwa/threejs-StereoscopicEffects"
   }
 }

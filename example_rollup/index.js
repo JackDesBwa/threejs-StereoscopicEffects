@@ -16,7 +16,7 @@ function init() {
 
 	renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setPixelRatio(window.devicePixelRatio);
-	stereofx = new StereoscopicEffects(renderer, defaultEffect);
+	stereofx = new StereoscopicEffects(THREE, renderer, defaultEffect);
 	stereofx.setSize(window.innerWidth, window.innerHeight);
 
 
