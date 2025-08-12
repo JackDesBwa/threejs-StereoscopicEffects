@@ -1,20 +1,7 @@
-import {
-	LinearFilter,
-	Matrix3,
-	Mesh,
-	NearestFilter,
-	OrthographicCamera,
-	PlaneGeometry,
-	RGBAFormat,
-	Scene,
-	ShaderMaterial,
-	StereoCamera,
-	Vector2,
-	WebGLRenderTarget
-} from 'three';
+let T = undefined;
 
 export const SideBySideStereoEffect = function(renderer, strenderer, cross, squeeze, tab) {
-	const _sz = new Vector2();
+	const _sz = new T.Vector2();
 	let _cross, _tab;
 
 	this.render = function(scene, camera) {
@@ -63,7 +50,7 @@ export const SideBySideStereoEffect = function(renderer, strenderer, cross, sque
 };
 
 export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
-	const _material = new ShaderMaterial({
+	const _material = new T.ShaderMaterial({
 		uniforms: {
 			"tl": { value: strenderer.bufferL.texture },
 			"tr": { value: strenderer.bufferR.texture },
@@ -101,8 +88,8 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 		].join("\n")
 	});
 
-	const _mesh = new Mesh(new PlaneGeometry(2, 2), _material);
-	const _scene = new Scene();
+	const _mesh = new T.Mesh(new T.PlaneGeometry(2, 2), _material);
+	const _scene = new T.Scene();
 	_scene.add(_mesh);
 
 	this.render = function(scene, camera) {
@@ -130,7 +117,7 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 };
 
 export const MirroredStereoEffect = function (renderer, strenderer, dir) {
-	const _material = new ShaderMaterial({
+	const _material = new T.ShaderMaterial({
 		uniforms: {
 			"tl": { value: strenderer.bufferL.texture },
 			"tr": { value: strenderer.bufferR.texture },
@@ -166,8 +153,8 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 		].join("\n")
 	});
 
-	const _mesh = new Mesh(new PlaneGeometry(2, 2), _material);
-	const _scene = new Scene();
+	const _mesh = new T.Mesh(new T.PlaneGeometry(2, 2), _material);
+	const _scene = new T.Scene();
 	_scene.add(_mesh);
 
 	this.render = function(scene, camera) {
@@ -195,79 +182,79 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 
 export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 	const _anaglyphGray_gm = [
-		new Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
+		new T.Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
 	];
 	const _anaglyphGray_yb = [
-		new Matrix3().fromArray([ 0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
+		new T.Matrix3().fromArray([ 0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
 	];
 	const _anaglyphGray_rc = [
-		new Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114 ]).transpose()
+		new T.Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114 ]).transpose()
 	];
 	const _anaglyphHalfColors_gm = [
-		new Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
+		new T.Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
 	];
 	const _anaglyphHalfColors_yb = [
-		new Matrix3().fromArray([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
+		new T.Matrix3().fromArray([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
 	];
 	const _anaglyphHalfColors_rc = [
-		new Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ]).transpose()
+		new T.Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ]).transpose()
 	];
 	const _anaglyphFullColors_gm = [
-		new Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
+		new T.Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
 	];
 	const _anaglyphFullColors_yb = [
-		new Matrix3().fromArray([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
+		new T.Matrix3().fromArray([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
 	];
 	const _anaglyphFullColors_rc = [
-		new Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]).transpose(),
-		new Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ]).transpose()
+		new T.Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]).transpose(),
+		new T.Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ]).transpose()
 	];
 	const _anaglyphDubois_gm = [
-		new Matrix3().fromArray([
+		new T.Matrix3().fromArray([
 			-0.062, -0.158, -0.039,
 			+0.284, +0.668, +0.143,
 			-0.015, -0.027, +0.021
 		]).transpose(),
-		new Matrix3().fromArray([
+		new T.Matrix3().fromArray([
 			+0.529, +0.705, +0.024,
 			-0.016, -0.015, -0.065,
 			+0.009, +0.075, +0.937
 		]).transpose()
 	];
 	const _anaglyphDubois_yb = [
-		new Matrix3().fromArray([
+		new T.Matrix3().fromArray([
 			+1.062, -0.205, +0.299,
 			-0.026, +0.908, +0.068,
 			-0.038, -0.173, +0.022
 		]).transpose(),
-		new Matrix3().fromArray([
+		new T.Matrix3().fromArray([
 			-0.016, -0.123, -0.017,
 			+0.006, +0.062, -0.017,
 			+0.094, +0.185, +0.911
 		]).transpose()
 	];
 	const _anaglyphDubois_rc = [
-		new Matrix3().fromArray([
+		new T.Matrix3().fromArray([
 				+0.456, +0.500, +0.176,
 				-0.040, -0.038, -0.016,
 				-0.015, -0.021, -0.005
 		]).transpose(),
-		new Matrix3().fromArray([
+		new T.Matrix3().fromArray([
 				-0.043, -0.088, -0.002,
 				+0.378, +0.734, -0.018,
 				-0.072, -0.113, +1.226
 		]).transpose()
 	];
 
-	const _material = new ShaderMaterial({
+	const _material = new T.ShaderMaterial({
 		uniforms: {
 			"tl": { value: strenderer.bufferL.texture },
 			"tr": { value: strenderer.bufferR.texture },
@@ -306,8 +293,8 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 		_anaglyphGray_gm, _anaglyphHalfColors_gm, _anaglyphFullColors_gm, _anaglyphDubois_gm
 	];
 
-	const _mesh = new Mesh(new PlaneGeometry(2, 2), _material);
-	const _scene = new Scene();
+	const _mesh = new T.Mesh(new T.PlaneGeometry(2, 2), _material);
+	const _scene = new T.Scene();
 	_scene.add(_mesh);
 
 	this.render = function(scene, camera) {
@@ -353,13 +340,14 @@ export const SingleViewStereoEffect = function (renderer, strenderer, cross) {
 };
 
 export const StereoscopicEffectsRenderer = function(renderer) {
-	this.stereoCamera = new StereoCamera();
-	this.orthoCamera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
-	this.bufferL = new WebGLRenderTarget(renderer.width, renderer.height, { minFilter: LinearFilter, magFilter: NearestFilter, format: RGBAFormat });
+	this.stereoCamera = new T.StereoCamera();
+	this.orthoCamera = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+	this.bufferL = new T.WebGLRenderTarget(renderer.width, renderer.height, { minFilter: T.LinearFilter, magFilter: T.NearestFilter, format: T.RGBAFormat });
 	this.bufferR = this.bufferL.clone();
 }
 
-export const StereoscopicEffects = function (renderer, effect) {
+export const StereoscopicEffects = function (three, renderer, effect) {
+	T = three;
 	const strenderer = new StereoscopicEffectsRenderer(renderer);
 	let _effect = new SingleViewStereoEffect(renderer, strenderer);
 
