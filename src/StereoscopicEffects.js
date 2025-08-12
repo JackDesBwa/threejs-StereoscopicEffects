@@ -181,77 +181,80 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 };
 
 export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
+	const M = function(a) {
+		return new T.Matrix3().fromArray(a).transpose()
+	};
 	const _anaglyphGray_gm = [
-		new T.Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
+		M([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]),
+		M([ 0.299, 0.587, 0.114, 0, 0, 0, 0.299, 0.587, 0.114 ])
 	];
 	const _anaglyphGray_yb = [
-		new T.Matrix3().fromArray([ 0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
+		M([ 0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0, 0, 0 ]),
+		M([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ])
 	];
 	const _anaglyphGray_rc = [
-		new T.Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114 ]).transpose()
+		M([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]),
+		M([ 0, 0, 0, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114 ])
 	];
 	const _anaglyphHalfColors_gm = [
-		new T.Matrix3().fromArray([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
+		M([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]),
+		M([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ])
 	];
 	const _anaglyphHalfColors_yb = [
-		new T.Matrix3().fromArray([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ]).transpose()
+		M([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]),
+		M([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ])
 	];
 	const _anaglyphHalfColors_rc = [
-		new T.Matrix3().fromArray([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ]).transpose()
+		M([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]),
+		M([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ])
 	];
 	const _anaglyphFullColors_gm = [
-		new T.Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
+		M([ 0, 0, 0, 0, 1, 0, 0, 0, 0 ]),
+		M([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ])
 	];
 	const _anaglyphFullColors_yb = [
-		new T.Matrix3().fromArray([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 0, 0, 0, 0, 0, 0, 0, 0, 1 ]).transpose()
+		M([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]),
+		M([ 0, 0, 0, 0, 0, 0, 0, 0, 1 ])
 	];
 	const _anaglyphFullColors_rc = [
-		new T.Matrix3().fromArray([ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]).transpose(),
-		new T.Matrix3().fromArray([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ]).transpose()
+		M([ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]),
+		M([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ])
 	];
 	const _anaglyphDubois_gm = [
-		new T.Matrix3().fromArray([
+		M([
 			-0.062, -0.158, -0.039,
 			+0.284, +0.668, +0.143,
 			-0.015, -0.027, +0.021
-		]).transpose(),
-		new T.Matrix3().fromArray([
+		]),
+		M([
 			+0.529, +0.705, +0.024,
 			-0.016, -0.015, -0.065,
 			+0.009, +0.075, +0.937
-		]).transpose()
+		])
 	];
 	const _anaglyphDubois_yb = [
-		new T.Matrix3().fromArray([
+		M([
 			+1.062, -0.205, +0.299,
 			-0.026, +0.908, +0.068,
 			-0.038, -0.173, +0.022
-		]).transpose(),
-		new T.Matrix3().fromArray([
+		]),
+		M([
 			-0.016, -0.123, -0.017,
 			+0.006, +0.062, -0.017,
 			+0.094, +0.185, +0.911
-		]).transpose()
+		])
 	];
 	const _anaglyphDubois_rc = [
-		new T.Matrix3().fromArray([
+		M([
 				+0.456, +0.500, +0.176,
 				-0.040, -0.038, -0.016,
 				-0.015, -0.021, -0.005
-		]).transpose(),
-		new T.Matrix3().fromArray([
+		]),
+		M([
 				-0.043, -0.088, -0.002,
 				+0.378, +0.734, -0.018,
 				-0.072, -0.113, +1.226
-		]).transpose()
+		])
 	];
 
 	const _material = new T.ShaderMaterial({
