@@ -26,7 +26,7 @@ function init() {
 	controls.screenSpacePanning = false;
 	controls.listenToKeyEvents(window);
 
-	const modes = StereoscopicEffects.effectsListForm();
+	const modes = StereoscopicEffects.effectsListSelect();
 	modes.value = defaultEffect;
 	modes.style.position = 'absolute';
 	modes.style.top = 0;

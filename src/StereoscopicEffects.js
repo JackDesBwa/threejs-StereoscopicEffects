@@ -486,7 +486,7 @@ StereoscopicEffects.effectsList = function() {
 	return ret;
 }
 
-StereoscopicEffects.effectsListForm = function(name) {
+StereoscopicEffects.effectsListSelect = function(name) {
 	const select = document.createElement("select");
 	select.name = name || 'mode';
 	StereoscopicEffects.effectsList().forEach(v => {

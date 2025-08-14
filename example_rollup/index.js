@@ -20,7 +20,7 @@ function init() {
 	stereofx.setSize(window.innerWidth, window.innerHeight);
 
 
-	const modes = StereoscopicEffects.effectsListForm();
+	const modes = StereoscopicEffects.effectsListSelect();
 	modes.value = defaultEffect;
 	modes.style.position = 'absolute';
 	modes.style.top = 0;
