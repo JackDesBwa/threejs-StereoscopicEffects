@@ -421,21 +421,23 @@ export const StereoscopicEffects = function (three, renderer, effect) {
 	this.setEffect(effect);
 };
 
-StereoscopicEffects.effectsListForm = function(name) {
-	const select = document.createElement("select");
-	select.name = name || 'mode';
-	let optgroup, n = -1;
-	function g(l) {
-		optgroup = document.createElement("optgroup");
-		optgroup.label = l;
-		select.appendChild(optgroup);
+StereoscopicEffects.effectsList = function() {
+	const ret = [];
+	let cur_g = [];
+	let v = -1;
+	function g(n) {
+		cur_g = new Array();
+		ret.push({
+			'category': n,
+			'elements': cur_g,
+		});
 	}
-	function o(l, np) {
-		n = np || n + 1;
-		const option = document.createElement("option");
-		option.text = l;
-		option.value = n;
-		optgroup.appendChild(option);
+	function o(n) {
+		v += 1;
+		cur_g.push({
+			'name': n,
+			'value': v,
+		});
 	}
 
 	g("Single view");
@@ -481,5 +483,22 @@ StereoscopicEffects.effectsListForm = function(name) {
 	o("Anaglyph Green/Magenta Full Colors");
 	o("Anaglyph Green/Magenta Dubois");
 
+	return ret;
+}
+
+StereoscopicEffects.effectsListForm = function(name) {
+	const select = document.createElement("select");
+	select.name = name || 'mode';
+	StereoscopicEffects.effectsList().forEach(v => {
+		const optgroup = document.createElement("optgroup");
+		optgroup.label = v.name;
+		select.appendChild(optgroup);
+		v.elements.forEach(v => {
+			const option = document.createElement("option");
+			option.text = v.name;
+			option.value = v.value;
+			optgroup.appendChild(option);
+		});
+	});
 	return select;
 };
