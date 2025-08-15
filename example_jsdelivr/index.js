@@ -2,11 +2,13 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { StereoscopicEffects } from 'threejs-StereoscopicEffects';
 
-let scene, cube, camera, renderer, controls, stereofx;
+let scene, clock, cube, camera, renderer, controls, stereofx;
 
 function init() {
 	scene = new THREE.Scene();
 	const defaultEffect = 20; // Anaglyph RC half-colors
+
+	clock = new THREE.Clock();
 
 	cube = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshNormalMaterial());
 	scene.add(cube);
@@ -45,14 +47,10 @@ function init() {
 	document.body.appendChild(renderer.domElement);
 }
 
-let ltime = 0;
-function render(time) {
-	const dt = (time - ltime) / 1000;
-	ltime = time;
-
-	requestAnimationFrame(render);
-
+function render() {
+	const dt = clock.getDelta();
 	const speed = 0.5;
+
 	cube.rotation.x -= dt * speed * 2;
 	cube.rotation.y -= dt * speed;
 	cube.rotation.z -= dt * speed * 3;
@@ -62,4 +60,4 @@ function render(time) {
 }
 
 init();
-render(0);
+renderer.setAnimationLoop(render);
