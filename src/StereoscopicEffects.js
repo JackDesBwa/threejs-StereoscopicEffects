@@ -8,6 +8,13 @@ const simpleVertexShader = `
 	}
 `;
 
+const commonFragH = `
+	uniform sampler2D tl;
+	uniform sampler2D tr;
+	varying vec2 vUv;
+	vec4 c(sampler2D t) { return sRGBTransferOETF(texture2D(t, vUv)); }
+`;
+
 export const SideBySideStereoEffect = function(renderer, strenderer, cross, squeeze, tab) {
 	const _sz = new T.Vector2();
 	let _cross, _tab;
@@ -67,13 +74,10 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 			"checkboard": { value: dir >= 4 }
 		},
 		vertexShader: simpleVertexShader,
-		fragmentShader: `
-			uniform sampler2D tl;
-			uniform sampler2D tr;
+		fragmentShader: commonFragH + `
 			uniform bool dir;
 			uniform bool inv;
 			uniform bool checkboard;
-			varying vec2 vUv;
 
 			void main() {
 				vec2 uv = vUv;
@@ -82,9 +86,9 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 				if (checkboard) coord = mod(gl_FragCoord.x, 2.0) + mod(gl_FragCoord.y, 2.0);
 				if (inv) coord += 1.0;
 				if ((mod(coord, 2.0)) >= 1.0) {
-					gl_FragColor = sRGBTransferOETF(texture2D(tr, vUv));
+					gl_FragColor = c(tr);
 				} else {
-					gl_FragColor = sRGBTransferOETF(texture2D(tl, vUv));
+					gl_FragColor = c(tl);
 				}
 			}`
 	});
@@ -126,23 +130,20 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 			"invr": { value: ((dir & 2) == 2) },
 		},
 		vertexShader: simpleVertexShader,
-		fragmentShader: `
-			uniform sampler2D tl;
-			uniform sampler2D tr;
+		fragmentShader: commonFragH + `
 			uniform bool invl;
 			uniform bool invr;
-			varying vec2 vUv;
 
 			void main() {
 				vec2 uv = vec2(vUv.x, vUv.y);
 				if (uv.x <= 0.5) {
 					uv.x = uv.x + 0.25;
 					if (invl) uv.x = 1.0 - uv.x;
-					gl_FragColor = sRGBTransferOETF(texture2D(tl, uv));
+					gl_FragColor = c(tl);
 				} else {
 					uv.x = uv.x - 0.25;
 					if (invr) uv.x = 1.0 - uv.x;
-					gl_FragColor = sRGBTransferOETF(texture2D(tr, uv));
+					gl_FragColor = c(tr);
 				}
 			}`
 	});
@@ -259,17 +260,13 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 			"mr": { value: _anaglyphDubois_rc[1] }
 		},
 		vertexShader: simpleVertexShader,
-		fragmentShader: `
-			uniform sampler2D tl;
-			uniform sampler2D tr;
-			varying vec2 vUv;
-
+		fragmentShader: commonFragH + `
 			uniform mat3 ml;
 			uniform mat3 mr;
 
 			void main() {
-				vec4 cl = sRGBTransferOETF(texture2D(tl, vUv));
-				vec4 cr = sRGBTransferOETF(texture2D(tr, vUv));
+				vec4 cl = c(tl);
+				vec4 cr = c(tr);
 				vec3 c = ml * cl.rgb + mr * cr.rgb;
 				gl_FragColor = vec4(
 						c.r, c.g, c.b,
