@@ -1,6 +1,6 @@
 {
   "name": "threejs-stereoscopiceffects",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "StereoscopicEffects for three.js",
   "main": "src/StereoscopicEffects.js",
   "scripts": {
