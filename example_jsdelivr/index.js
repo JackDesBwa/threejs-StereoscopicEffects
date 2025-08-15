@@ -21,7 +21,7 @@ function init() {
 	renderer.setPixelRatio(window.devicePixelRatio);
 	stereofx = new StereoscopicEffects(THREE, renderer, defaultEffect);
 	stereofx.setSize(window.innerWidth, window.innerHeight);
- 
+
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableDamping = true;
 	controls.dampingFactor = 0.05;
