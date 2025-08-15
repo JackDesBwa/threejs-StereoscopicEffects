@@ -491,7 +491,7 @@ StereoscopicEffects.effectsListSelect = function(name) {
 	select.name = name || 'mode';
 	StereoscopicEffects.effectsList().forEach(v => {
 		const optgroup = document.createElement("optgroup");
-		optgroup.label = v.name;
+		optgroup.label = v.category;
 		select.appendChild(optgroup);
 		v.elements.forEach(v => {
 			const option = document.createElement("option");
