@@ -44,6 +44,28 @@ function init() {
 		stereofx.setSize(window.innerWidth, window.innerHeight);
 	});
 
+	if (navigator.xr) {
+		renderer.xr.enabled = true;
+		renderer.xr.setReferenceSpaceType('local');
+		const btn = document.createElement('button');
+		btn.innerText = 'Enter VR';
+		btn.style.position = 'absolute';
+		btn.style.top = 0;
+		btn.style.left = 0;
+		btn.onclick = () => {
+			navigator.xr.requestSession('immersive-vr').then(session => {
+				btn.style.display = 'none';
+				session.addEventListener("end", () => {
+					btn.style.display = 'block';
+					camera.position.set(0, 0, 0);
+					camera.lookAt(cube.position);
+				});
+				renderer.xr.setSession(session)
+			});
+		};
+		document.body.appendChild(btn);
+	}
+
 	document.body.appendChild(renderer.domElement);
 }
 
