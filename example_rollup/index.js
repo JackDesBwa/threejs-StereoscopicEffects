@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { StereoscopicEffects } from 'threejs-StereoscopicEffects';
 
-let scene, clock, cube, camera, renderer, stereofx;
+let scene, clock, cube, camera, renderer, controls, stereofx;
 
 function init() {
 	scene = new THREE.Scene();
@@ -21,6 +22,11 @@ function init() {
 	stereofx = new StereoscopicEffects(THREE, renderer, defaultEffect);
 	stereofx.setSize(window.innerWidth, window.innerHeight);
 
+	controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	controls.dampingFactor = 0.05;
+	controls.screenSpacePanning = false;
+	controls.listenToKeyEvents(window);
 
 	const modes = StereoscopicEffects.effectsListSelect();
 	modes.value = defaultEffect;
@@ -71,6 +77,7 @@ function render() {
 	cube.rotation.y -= dt * speed;
 	cube.rotation.z -= dt * speed * 3;
 
+	controls.update();
 	stereofx.render(scene, camera);
 }
 
