@@ -80,9 +80,9 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 			"	if (checkboard) coord = mod(gl_FragCoord.x, 2.0) + mod(gl_FragCoord.y, 2.0);",
 			"	if (inv) coord += 1.0;",
 			"	if ((mod(coord, 2.0)) >= 1.0) {",
-			"		gl_FragColor = texture2D(tr, vUv);",
+			"		gl_FragColor = sRGBTransferOETF(texture2D(tr, vUv));",
 			"	} else {",
-			"		gl_FragColor = texture2D(tl, vUv);",
+			"		gl_FragColor = sRGBTransferOETF(texture2D(tl, vUv));",
 			"	}",
 			"}"
 		].join("\n")
@@ -143,11 +143,11 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 			"	if (uv.x <= 0.5) {",
 			"		uv.x = uv.x + 0.25;",
 			"		if (invl) uv.x = 1.0 - uv.x;",
-			"		gl_FragColor = texture2D(tl, uv);",
+			"		gl_FragColor = sRGBTransferOETF(texture2D(tl, uv));",
 			"	} else {",
 			"		uv.x = uv.x - 0.25;",
 			"		if (invr) uv.x = 1.0 - uv.x;",
-			"		gl_FragColor = texture2D(tr, uv);",
+			"		gl_FragColor = sRGBTransferOETF(texture2D(tr, uv));",
 			"	}",
 			"}"
 		].join("\n")
@@ -280,8 +280,8 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 			"uniform mat3 mr;",
 
 			"void main() {",
-			"	vec4 cl = texture2D(tl, vUv);",
-			"	vec4 cr = texture2D(tr, vUv);",
+			"	vec4 cl = sRGBTransferOETF(texture2D(tl, vUv));",
+			"	vec4 cr = sRGBTransferOETF(texture2D(tr, vUv));",
 			"	vec3 c = ml * cl.rgb + mr * cr.rgb;",
 			"	gl_FragColor = vec4(",
 			"			c.r, c.g, c.b,",
