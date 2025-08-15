@@ -23,6 +23,7 @@ function init() {
 	stereofx.setSize(window.innerWidth, window.innerHeight);
 
 	controls = new OrbitControls(camera, renderer.domElement);
+	controls.target = cube.position;
 	controls.enableDamping = true;
 	controls.dampingFactor = 0.05;
 	controls.screenSpacePanning = false;
