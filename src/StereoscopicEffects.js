@@ -1,5 +1,13 @@
 let T = undefined;
 
+const simpleVertexShader = `
+	varying vec2 vUv;
+	void main() {
+		vUv = vec2(uv.x, uv.y);
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+	}
+`;
+
 export const SideBySideStereoEffect = function(renderer, strenderer, cross, squeeze, tab) {
 	const _sz = new T.Vector2();
 	let _cross, _tab;
@@ -58,13 +66,7 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 			"dir": { value: ((dir & 2) == 2) },
 			"checkboard": { value: dir >= 4 }
 		},
-		vertexShader: [
-			"varying vec2 vUv;",
-			"void main() {",
-			"	vUv = vec2(uv.x, uv.y);",
-			"	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-			"}"
-		].join("\n"),
+		vertexShader: simpleVertexShader,
 		fragmentShader: [
 			"uniform sampler2D tl;",
 			"uniform sampler2D tr;",
@@ -124,13 +126,7 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 			"invl": { value: ((dir & 1) == 1) },
 			"invr": { value: ((dir & 2) == 2) },
 		},
-		vertexShader: [
-			"varying vec2 vUv;",
-			"void main() {",
-			"	vUv = vec2(uv.x, uv.y);",
-			"	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-			"}"
-		].join("\n"),
+		vertexShader: simpleVertexShader,
 		fragmentShader: [
 			"uniform sampler2D tl;",
 			"uniform sampler2D tr;",
@@ -264,13 +260,7 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 			"ml": { value: _anaglyphDubois_rc[0] },
 			"mr": { value: _anaglyphDubois_rc[1] }
 		},
-		vertexShader: [
-			"varying vec2 vUv;",
-			"void main() {",
-			"	vUv = vec2(uv.x, uv.y);",
-			"	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-			"}"
-		].join("\n"),
+		vertexShader: simpleVertexShader,
 		fragmentShader: [
 			"uniform sampler2D tl;",
 			"uniform sampler2D tr;",
