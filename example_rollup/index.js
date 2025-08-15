@@ -10,11 +10,11 @@ function init() {
 	clock = new THREE.Clock();
 
 	cube = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshNormalMaterial());
+	cube.position.set(0, 0, -3);
 	scene.add(cube);
 
-	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10);
-	camera.position.set(0, 3, 3);
-	camera.lookAt(scene.position);
+	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.3, 30);
+	camera.lookAt(cube.position);
 
 	renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setPixelRatio(window.devicePixelRatio);
