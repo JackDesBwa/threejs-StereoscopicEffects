@@ -67,27 +67,26 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 			"checkboard": { value: dir >= 4 }
 		},
 		vertexShader: simpleVertexShader,
-		fragmentShader: [
-			"uniform sampler2D tl;",
-			"uniform sampler2D tr;",
-			"uniform bool dir;",
-			"uniform bool inv;",
-			"uniform bool checkboard;",
-			"varying vec2 vUv;",
+		fragmentShader: `
+			uniform sampler2D tl;
+			uniform sampler2D tr;
+			uniform bool dir;
+			uniform bool inv;
+			uniform bool checkboard;
+			varying vec2 vUv;
 
-			"void main() {",
-			"	vec2 uv = vUv;",
-			"	float coord = gl_FragCoord.y;",
-			"	if (dir) coord = gl_FragCoord.x;",
-			"	if (checkboard) coord = mod(gl_FragCoord.x, 2.0) + mod(gl_FragCoord.y, 2.0);",
-			"	if (inv) coord += 1.0;",
-			"	if ((mod(coord, 2.0)) >= 1.0) {",
-			"		gl_FragColor = sRGBTransferOETF(texture2D(tr, vUv));",
-			"	} else {",
-			"		gl_FragColor = sRGBTransferOETF(texture2D(tl, vUv));",
-			"	}",
-			"}"
-		].join("\n")
+			void main() {
+				vec2 uv = vUv;
+				float coord = gl_FragCoord.y;
+				if (dir) coord = gl_FragCoord.x;
+				if (checkboard) coord = mod(gl_FragCoord.x, 2.0) + mod(gl_FragCoord.y, 2.0);
+				if (inv) coord += 1.0;
+				if ((mod(coord, 2.0)) >= 1.0) {
+					gl_FragColor = sRGBTransferOETF(texture2D(tr, vUv));
+				} else {
+					gl_FragColor = sRGBTransferOETF(texture2D(tl, vUv));
+				}
+			}`
 	});
 
 	const _mesh = new T.Mesh(new T.PlaneGeometry(2, 2), _material);
@@ -127,26 +126,25 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 			"invr": { value: ((dir & 2) == 2) },
 		},
 		vertexShader: simpleVertexShader,
-		fragmentShader: [
-			"uniform sampler2D tl;",
-			"uniform sampler2D tr;",
-			"uniform bool invl;",
-			"uniform bool invr;",
-			"varying vec2 vUv;",
+		fragmentShader: `
+			uniform sampler2D tl;
+			uniform sampler2D tr;
+			uniform bool invl;
+			uniform bool invr;
+			varying vec2 vUv;
 
-			"void main() {",
-			"	vec2 uv = vec2(vUv.x, vUv.y);",
-			"	if (uv.x <= 0.5) {",
-			"		uv.x = uv.x + 0.25;",
-			"		if (invl) uv.x = 1.0 - uv.x;",
-			"		gl_FragColor = sRGBTransferOETF(texture2D(tl, uv));",
-			"	} else {",
-			"		uv.x = uv.x - 0.25;",
-			"		if (invr) uv.x = 1.0 - uv.x;",
-			"		gl_FragColor = sRGBTransferOETF(texture2D(tr, uv));",
-			"	}",
-			"}"
-		].join("\n")
+			void main() {
+				vec2 uv = vec2(vUv.x, vUv.y);
+				if (uv.x <= 0.5) {
+					uv.x = uv.x + 0.25;
+					if (invl) uv.x = 1.0 - uv.x;
+					gl_FragColor = sRGBTransferOETF(texture2D(tl, uv));
+				} else {
+					uv.x = uv.x - 0.25;
+					if (invr) uv.x = 1.0 - uv.x;
+					gl_FragColor = sRGBTransferOETF(texture2D(tr, uv));
+				}
+			}`
 	});
 
 	const _mesh = new T.Mesh(new T.PlaneGeometry(2, 2), _material);
@@ -261,24 +259,23 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 			"mr": { value: _anaglyphDubois_rc[1] }
 		},
 		vertexShader: simpleVertexShader,
-		fragmentShader: [
-			"uniform sampler2D tl;",
-			"uniform sampler2D tr;",
-			"varying vec2 vUv;",
+		fragmentShader: `
+			uniform sampler2D tl;
+			uniform sampler2D tr;
+			varying vec2 vUv;
 
-			"uniform mat3 ml;",
-			"uniform mat3 mr;",
+			uniform mat3 ml;
+			uniform mat3 mr;
 
-			"void main() {",
-			"	vec4 cl = sRGBTransferOETF(texture2D(tl, vUv));",
-			"	vec4 cr = sRGBTransferOETF(texture2D(tr, vUv));",
-			"	vec3 c = ml * cl.rgb + mr * cr.rgb;",
-			"	gl_FragColor = vec4(",
-			"			c.r, c.g, c.b,",
-			"			max(cl.a, cr.a)",
-			"	);",
-			"}"
-		].join("\n")
+			void main() {
+				vec4 cl = sRGBTransferOETF(texture2D(tl, vUv));
+				vec4 cr = sRGBTransferOETF(texture2D(tr, vUv));
+				vec3 c = ml * cl.rgb + mr * cr.rgb;
+				gl_FragColor = vec4(
+						c.r, c.g, c.b,
+						max(cl.a, cr.a)
+				);
+			}`
 	});
 	const _anaglyphs = [
 		_anaglyphGray_rc, _anaglyphHalfColors_rc, _anaglyphFullColors_rc, _anaglyphDubois_rc,
