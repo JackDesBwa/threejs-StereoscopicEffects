@@ -153,88 +153,12 @@ const MirroredStereoEffect = function (sr, dir) {
 };
 
 const AnaglyphStereoEffect = function (sr, method) {
-	const M = function(a) {
-		return new T.Matrix3().fromArray(a).transpose()
-	};
-	const _anaglyphGray_gm = [
-		M([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]),
-		M([ 0.299, 0.587, 0.114, 0, 0, 0, 0.299, 0.587, 0.114 ])
-	];
-	const _anaglyphGray_yb = [
-		M([ 0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0, 0, 0 ]),
-		M([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ])
-	];
-	const _anaglyphGray_rc = [
-		M([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]),
-		M([ 0, 0, 0, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114 ])
-	];
-	const _anaglyphHalfColors_gm = [
-		M([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]),
-		M([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ])
-	];
-	const _anaglyphHalfColors_yb = [
-		M([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]),
-		M([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ])
-	];
-	const _anaglyphHalfColors_rc = [
-		M([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]),
-		M([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ])
-	];
-	const _anaglyphFullColors_gm = [
-		M([ 0, 0, 0, 0, 1, 0, 0, 0, 0 ]),
-		M([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ])
-	];
-	const _anaglyphFullColors_yb = [
-		M([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]),
-		M([ 0, 0, 0, 0, 0, 0, 0, 0, 1 ])
-	];
-	const _anaglyphFullColors_rc = [
-		M([ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]),
-		M([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ])
-	];
-	const _anaglyphDubois_gm = [
-		M([
-			-0.062, -0.158, -0.039,
-			+0.284, +0.668, +0.143,
-			-0.015, -0.027, +0.021
-		]),
-		M([
-			+0.529, +0.705, +0.024,
-			-0.016, -0.015, -0.065,
-			+0.009, +0.075, +0.937
-		])
-	];
-	const _anaglyphDubois_yb = [
-		M([
-			+1.062, -0.205, +0.299,
-			-0.026, +0.908, +0.068,
-			-0.038, -0.173, +0.022
-		]),
-		M([
-			-0.016, -0.123, -0.017,
-			+0.006, +0.062, -0.017,
-			+0.094, +0.185, +0.911
-		])
-	];
-	const _anaglyphDubois_rc = [
-		M([
-				+0.456, +0.500, +0.176,
-				-0.040, -0.038, -0.016,
-				-0.015, -0.021, -0.005
-		]),
-		M([
-				-0.043, -0.088, -0.002,
-				+0.378, +0.734, -0.018,
-				-0.072, -0.113, +1.226
-		])
-	];
-
 	const _material = new T.ShaderMaterial({
 		uniforms: {
 			"tl": { value: sr.bufferL.texture },
 			"tr": { value: sr.bufferR.texture },
-			"ml": { value: _anaglyphDubois_rc[0] },
-			"mr": { value: _anaglyphDubois_rc[1] }
+			"ml": { value: null },
+			"mr": { value: null }
 		},
 		vertexShader: simpleVertexShader,
 		fragmentShader: commonFragH + `
@@ -251,22 +175,105 @@ const AnaglyphStereoEffect = function (sr, method) {
 				);
 			}`
 	});
-	const _anaglyphs = [
-		_anaglyphGray_rc, _anaglyphHalfColors_rc, _anaglyphFullColors_rc, _anaglyphDubois_rc,
-		_anaglyphGray_yb, _anaglyphHalfColors_yb, _anaglyphFullColors_yb, _anaglyphDubois_yb,
-		_anaglyphGray_gm, _anaglyphHalfColors_gm, _anaglyphFullColors_gm, _anaglyphDubois_gm
-	];
 
 	makeMultiRender(sr, this, _material);
 
-	const setMethod = function(method) {
-		method = Number(method);
-		if (method < 0 || method >= _anaglyphs.length || isNaN(method)) method = 1;
-		_material.uniforms.ml.value = _anaglyphs[method][0];
-		_material.uniforms.mr.value = _anaglyphs[method][1];
+	const getMatrices = m => {
+		const M = function(a) {
+			return new T.Matrix3().fromArray(a).transpose()
+		};
+		switch (m) {
+			case 0: // Grey RC
+				return [
+					M([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]),
+					M([ 0, 0, 0, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114 ])
+				];
+			case 1: // HalfColors RC
+				return [
+					M([ 0.299, 0.587, 0.114, 0, 0, 0, 0, 0, 0 ]),
+					M([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ])
+				];
+			case 2: // FullColors RC
+				return [
+					M([ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]),
+					M([ 0, 0, 0, 0, 1, 0, 0, 0, 1 ])
+				];
+			case 3: // Dubois RC
+				return [
+					M([
+						+0.456, +0.500, +0.176,
+						-0.040, -0.038, -0.016,
+						-0.015, -0.021, -0.005
+					]),
+					M([
+						-0.043, -0.088, -0.002,
+						+0.378, +0.734, -0.018,
+						-0.072, -0.113, +1.226
+					])
+				];
+			case 4: // Grey YB
+				return [
+					M([ 0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0, 0, 0 ]),
+					M([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ])
+				];
+			case 5: // HalfColors YB
+				return [
+					M([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]),
+					M([ 0, 0, 0, 0, 0, 0, 0.299, 0.587, 0.114 ])
+				];
+			case 6: // FullColors YB
+				return [
+					M([ 1, 0, 0, 0, 1, 0, 0, 0, 0 ]),
+					M([ 0, 0, 0, 0, 0, 0, 0, 0, 1 ])
+				];
+			case 7: // Dubois YB
+				return [
+					M([
+						+1.062, -0.205, +0.299,
+						-0.026, +0.908, +0.068,
+						-0.038, -0.173, +0.022
+					]),
+					M([
+						-0.016, -0.123, -0.017,
+						+0.006, +0.062, -0.017,
+						+0.094, +0.185, +0.911
+					])
+				];
+			case 8: // Grey GM
+				return [
+					M([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]),
+					M([ 0.299, 0.587, 0.114, 0, 0, 0, 0.299, 0.587, 0.114 ])
+				];
+			case 9: // HalfColors GM
+				return [
+					M([ 0, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0 ]),
+					M([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ])
+				];
+			case 10: // FullColors GM
+				return [
+					M([ 0, 0, 0, 0, 1, 0, 0, 0, 0 ]),
+					M([ 1, 0, 0, 0, 0, 0, 0, 0, 1 ])
+				];
+			case 11: // Dubois GM
+				return [
+					M([
+						-0.062, -0.158, -0.039,
+						+0.284, +0.668, +0.143,
+						-0.015, -0.027, +0.021
+					]),
+					M([
+						+0.529, +0.705, +0.024,
+						-0.016, -0.015, -0.065,
+						+0.009, +0.075, +0.937
+					])
+				];
+		}
 	}
-
-	setMethod(method);
+	method = Number(method);
+	if (method < 0 || method >= 12 || isNaN(method)) method = 1;
+	const _matrices = getMatrices(method)
+	_material.uniforms.ml.value = _matrices[0];
+	_material.uniforms.mr.value = _matrices[1];
 };
 
 const SingleViewStereoEffect = function (sr, cross) {
@@ -285,7 +292,7 @@ const StereoscopicEffectsRenderer = function(renderer) {
 		{ minFilter: T.LinearFilter, magFilter: T.NearestFilter, format: T.RGBAFormat }
 	);
 	this.bufferR = this.bufferL.clone();
-}
+};
 
 export const StereoscopicEffects = function (renderer, effect) {
 	if (!T) throw new Error("StereoscopicEffects: no three.js provided");
