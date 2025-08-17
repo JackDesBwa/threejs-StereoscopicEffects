@@ -1,20 +1,23 @@
 {
-  "name": "threejs-stereoscopiceffects",
-  "version": "1.2.2",
-  "description": "StereoscopicEffects for three.js",
-  "main": "src/StereoscopicEffects.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "exports": "./src/StereoscopicEffects.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JackDesBwa/threejs-StereoscopicEffects.git"
-  },
-  "author": "JackDesBwa",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/JackDesBwa/threejs-StereoscopicEffects/issues"
-  },
-  "homepage": "https://github.com/JackDesBwa/threejs-StereoscopicEffects#readme"
+	"name": "threejs-stereoscopiceffects",
+	"version": "1.2.2",
+	"license": "MIT",
+	"description": "StereoscopicEffects for three.js",
+	"type": "module",
+	"module": "src/StereoscopicEffects.js",
+	"exports": {
+		".": {
+			"import": "./src/StereoscopicEffects.js",
+			"types": "./src/StereoscopicEffects.d.js"
+		}
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JackDesBwa/threejs-StereoscopicEffects.git"
+	},
+	"author": "JackDesBwa",
+	"bugs": {
+		"url": "https://github.com/JackDesBwa/threejs-StereoscopicEffects/issues"
+	},
+	"homepage": "https://github.com/JackDesBwa/threejs-StereoscopicEffects#readme"
 }
