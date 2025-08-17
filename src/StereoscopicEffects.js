@@ -16,53 +16,55 @@ const commonFragH = `
 	vec4 c(sampler2D t) { return c(t, vUv); }
 `;
 
-export const SideBySideStereoEffect = function(renderer, strenderer, cross, squeeze, tab) {
+export const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
 	const _sz = new T.Vector2();
-	strenderer.stereoCamera.aspect = squeeze ? 1 : (tab ? 2 : 0.5);
+	sr.stereoCamera.aspect = squeeze ? 1 : (tab ? 2 : 0.5);
 
-	this.render = function(scene, camera) {
-		renderer.getSize(_sz);
-		renderer.setScissorTest(true);
+	this.render = function(scene) {
+		const r = sr.r;
+		r.getSize(_sz);
+		r.setScissorTest(true);
 
 		if (tab) {
 			_sz.height /= 2;
 
-			renderer.setScissor(0, 0, _sz.width, _sz.height);
-			renderer.setViewport(0, 0, _sz.width, _sz.height);
-			renderer.render(scene, cross ? strenderer.stereoCamera.cameraL : strenderer.stereoCamera.cameraR);
+			r.setScissor(0, 0, _sz.width, _sz.height);
+			r.setViewport(0, 0, _sz.width, _sz.height);
+			r.render(scene, cross ? sr.stereoCamera.cameraL : sr.stereoCamera.cameraR);
 
-			renderer.setScissor(0, _sz.height, _sz.width, _sz.height);
-			renderer.setViewport(0, _sz.height, _sz.width, _sz.height);
-			renderer.render(scene, cross ? strenderer.stereoCamera.cameraR : strenderer.stereoCamera.cameraL);
+			r.setScissor(0, _sz.height, _sz.width, _sz.height);
+			r.setViewport(0, _sz.height, _sz.width, _sz.height);
+			r.render(scene, cross ? sr.stereoCamera.cameraR : sr.stereoCamera.cameraL);
 
 		} else {
 			_sz.width /= 2;
 
-			renderer.setScissor(0, 0, _sz.width, _sz.height);
-			renderer.setViewport(0, 0, _sz.width, _sz.height);
-			renderer.render(scene, cross ? strenderer.stereoCamera.cameraR : strenderer.stereoCamera.cameraL);
+			r.setScissor(0, 0, _sz.width, _sz.height);
+			r.setViewport(0, 0, _sz.width, _sz.height);
+			r.render(scene, cross ? sr.stereoCamera.cameraR : sr.stereoCamera.cameraL);
 
-			renderer.setScissor(_sz.width, 0, _sz.width, _sz.height);
-			renderer.setViewport(_sz.width, 0, _sz.width, _sz.height);
-			renderer.render(scene, cross ? strenderer.stereoCamera.cameraL : strenderer.stereoCamera.cameraR);
+			r.setScissor(_sz.width, 0, _sz.width, _sz.height);
+			r.setViewport(_sz.width, 0, _sz.width, _sz.height);
+			r.render(scene, cross ? sr.stereoCamera.cameraL : sr.stereoCamera.cameraR);
 		}
 
-		renderer.setScissorTest(false);
+		r.setScissorTest(false);
 	};
 
 	this.dispose = function () {
-		renderer.getSize(_sz);
-		renderer.setScissor(0, 0, _sz.width, _sz.height);
-		renderer.setViewport(0, 0, _sz.width, _sz.height);
-		strenderer.stereoCamera.aspect = 1;
+		const r = sr.r;
+		r.getSize(_sz);
+		r.setScissor(0, 0, _sz.width, _sz.height);
+		r.setViewport(0, 0, _sz.width, _sz.height);
+		sr.stereoCamera.aspect = 1;
 	};
 };
 
-export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
+export const InterleavedStereoEffect = function (sr, dir) {
 	const _material = new T.ShaderMaterial({
 		uniforms: {
-			"tl": { value: strenderer.bufferL.texture },
-			"tr": { value: strenderer.bufferR.texture },
+			"tl": { value: sr.bufferL.texture },
+			"tr": { value: sr.bufferR.texture },
 			"inv": { value: ((dir & 1) == 1) ^ ((dir & 2) == 0) },
 			"dir": { value: ((dir & 2) == 2) },
 			"checkboard": { value: dir >= 4 }
@@ -91,22 +93,23 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 	const _scene = new T.Scene();
 	_scene.add(_mesh);
 
-	this.render = function(scene, camera) {
-		const originalRenderTarget = renderer.getRenderTarget();
+	this.render = function(scene) {
+		const r = sr.r;
+		const originalRenderTarget = r.getRenderTarget();
 
 
-		renderer.setRenderTarget(strenderer.bufferL);
-		renderer.clear();
-		renderer.render(scene, strenderer.stereoCamera.cameraL);
+		r.setRenderTarget(sr.bufferL);
+		r.clear();
+		r.render(scene, sr.stereoCamera.cameraL);
 
-		renderer.setRenderTarget(strenderer.bufferR);
-		renderer.clear();
-		renderer.render(scene, strenderer.stereoCamera.cameraR);
+		r.setRenderTarget(sr.bufferR);
+		r.clear();
+		r.render(scene, sr.stereoCamera.cameraR);
 
-		renderer.setRenderTarget(null);
-		renderer.render(_scene, strenderer.orthoCamera);
+		r.setRenderTarget(null);
+		r.render(_scene, sr.orthoCamera);
 
-		renderer.setRenderTarget(originalRenderTarget);
+		r.setRenderTarget(originalRenderTarget);
 	};
 
 	this.dispose = function () {
@@ -115,11 +118,11 @@ export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
 	};
 };
 
-export const MirroredStereoEffect = function (renderer, strenderer, dir) {
+export const MirroredStereoEffect = function (sr, dir) {
 	const _material = new T.ShaderMaterial({
 		uniforms: {
-			"tl": { value: strenderer.bufferL.texture },
-			"tr": { value: strenderer.bufferR.texture },
+			"tl": { value: sr.bufferL.texture },
+			"tr": { value: sr.bufferR.texture },
 			"invl": { value: ((dir & 1) == 1) },
 			"invr": { value: ((dir & 2) == 2) },
 		},
@@ -146,21 +149,22 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 	const _scene = new T.Scene();
 	_scene.add(_mesh);
 
-	this.render = function(scene, camera) {
-		const originalRenderTarget = renderer.getRenderTarget();
+	this.render = function(scene) {
+		const r = sr.r;
+		const originalRenderTarget = r.getRenderTarget();
 
-		renderer.setRenderTarget(strenderer.bufferL);
-		renderer.clear();
-		renderer.render(scene, strenderer.stereoCamera.cameraL);
+		r.setRenderTarget(sr.bufferL);
+		r.clear();
+		r.render(scene, sr.stereoCamera.cameraL);
 
-		renderer.setRenderTarget(strenderer.bufferR);
-		renderer.clear();
-		renderer.render(scene, strenderer.stereoCamera.cameraR);
+		r.setRenderTarget(sr.bufferR);
+		r.clear();
+		r.render(scene, sr.stereoCamera.cameraR);
 
-		renderer.setRenderTarget(null);
-		renderer.render(_scene, strenderer.orthoCamera);
+		r.setRenderTarget(null);
+		r.render(_scene, sr.orthoCamera);
 
-		renderer.setRenderTarget(originalRenderTarget);
+		r.setRenderTarget(originalRenderTarget);
 	};
 
 	this.dispose = function () {
@@ -169,7 +173,7 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 	};
 };
 
-export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
+export const AnaglyphStereoEffect = function (sr, method) {
 	const M = function(a) {
 		return new T.Matrix3().fromArray(a).transpose()
 	};
@@ -248,8 +252,8 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 
 	const _material = new T.ShaderMaterial({
 		uniforms: {
-			"tl": { value: strenderer.bufferL.texture },
-			"tr": { value: strenderer.bufferR.texture },
+			"tl": { value: sr.bufferL.texture },
+			"tr": { value: sr.bufferR.texture },
 			"ml": { value: _anaglyphDubois_rc[0] },
 			"mr": { value: _anaglyphDubois_rc[1] }
 		},
@@ -278,21 +282,22 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 	const _scene = new T.Scene();
 	_scene.add(_mesh);
 
-	this.render = function(scene, camera) {
-		const originalRenderTarget = renderer.getRenderTarget();
+	this.render = function(scene) {
+		const r = sr.r;
+		const originalRenderTarget = r.getRenderTarget();
 
-		renderer.setRenderTarget(strenderer.bufferL);
-		renderer.clear();
-		renderer.render(scene, strenderer.stereoCamera.cameraL);
+		r.setRenderTarget(sr.bufferL);
+		r.clear();
+		r.render(scene, sr.stereoCamera.cameraL);
 
-		renderer.setRenderTarget(strenderer.bufferR);
-		renderer.clear();
-		renderer.render(scene, strenderer.stereoCamera.cameraR);
+		r.setRenderTarget(sr.bufferR);
+		r.clear();
+		r.render(scene, sr.stereoCamera.cameraR);
 
-		renderer.setRenderTarget(null);
-		renderer.render(_scene, strenderer.orthoCamera);
+		r.setRenderTarget(null);
+		r.render(_scene, sr.orthoCamera);
 
-		renderer.setRenderTarget(originalRenderTarget);
+		r.setRenderTarget(originalRenderTarget);
 	};
 
 	this.dispose = function () {
@@ -310,32 +315,36 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 	setMethod(method);
 };
 
-export const SingleViewStereoEffect = function (renderer, strenderer, cross) {
-	this.render = function(scene, camera) {
-		renderer.render(scene, cross ? strenderer.stereoCamera.cameraR : strenderer.stereoCamera.cameraL);
+export const SingleViewStereoEffect = function (sr, cross) {
+	this.render = function(scene) {
+		sr.r.render(scene, cross ? sr.stereoCamera.cameraR : sr.stereoCamera.cameraL);
 	};
 	this.dispose = function () { };
 };
 
 export const StereoscopicEffectsRenderer = function(renderer) {
+	this.r = renderer;
 	this.stereoCamera = new T.StereoCamera();
 	this.orthoCamera = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-	this.bufferL = new T.WebGLRenderTarget(renderer.width, renderer.height, { minFilter: T.LinearFilter, magFilter: T.NearestFilter, format: T.RGBAFormat });
+	this.bufferL = new T.WebGLRenderTarget(
+		renderer.width, renderer.height,
+		{ minFilter: T.LinearFilter, magFilter: T.NearestFilter, format: T.RGBAFormat }
+	);
 	this.bufferR = this.bufferL.clone();
 }
 
 export const StereoscopicEffects = function (three, renderer, effect) {
 	T = three;
-	const strenderer = new StereoscopicEffectsRenderer(renderer);
-	let _effect = new SingleViewStereoEffect(renderer, strenderer);
+	const sr = new StereoscopicEffectsRenderer(renderer);
+	let _effect = new SingleViewStereoEffect(sr);
 
-	this.setEyeSeparation = function(sep) { strenderer.stereoCamera.eyeSep = sep; };
+	this.setEyeSeparation = function(sep) { sr.stereoCamera.eyeSep = sep; };
 
 	this.setSize = function(width, height) {
 		renderer.setSize(width, height);
 		const pixelRatio = renderer.getPixelRatio();
-		strenderer.bufferL.setSize(width * pixelRatio, height * pixelRatio);
-		strenderer.bufferR.setSize(width * pixelRatio, height * pixelRatio);
+		sr.bufferL.setSize(width * pixelRatio, height * pixelRatio);
+		sr.bufferR.setSize(width * pixelRatio, height * pixelRatio);
 	};
 
 	this.render = function(scene, camera) {
@@ -344,9 +353,9 @@ export const StereoscopicEffects = function (three, renderer, effect) {
 		} else {
 			scene.updateMatrixWorld();
 			if (camera.parent === null) camera.updateMatrixWorld();
-			strenderer.stereoCamera.update(camera);
+			sr.stereoCamera.update(camera);
 			if (renderer.autoClear) renderer.clear();
-			_effect.render(scene, camera);
+			_effect.render(scene);
 		}
 	}
 
@@ -361,36 +370,36 @@ export const StereoscopicEffects = function (three, renderer, effect) {
 		_effect.dispose();
 
 		if (effect < 2) {
-			_effect = new SingleViewStereoEffect(renderer, strenderer, effect);
+			_effect = new SingleViewStereoEffect(sr, effect);
 			return;
 		}
 		effect -= 2;
 
 		if (effect < 8) {
-			_effect = new SideBySideStereoEffect(renderer, strenderer, effect & 1, effect & 2, effect & 4);
+			_effect = new SideBySideStereoEffect(sr, effect & 1, effect & 2, effect & 4);
 			return;
 		}
 		effect -= 8;
 
 		if (effect < 6) {
-			_effect = new InterleavedStereoEffect(renderer, strenderer, effect);
+			_effect = new InterleavedStereoEffect(sr, effect);
 			return;
 		}
 		effect -= 6;
 
 		if (effect < 3) {
-			_effect = new MirroredStereoEffect(renderer, strenderer, effect+1);
+			_effect = new MirroredStereoEffect(sr, effect+1);
 			return;
 		}
 		effect -= 3;
 
 		if (effect < 12) {
-			_effect = new AnaglyphStereoEffect(renderer, strenderer, effect);
+			_effect = new AnaglyphStereoEffect(sr, effect);
 			return;
 		}
 		effect -= 12;
 
-		_effect = new SideBySideStereoEffect(renderer, strenderer);
+		_effect = new SideBySideStereoEffect(sr);
 	}
 
 	this.setEffect(effect);
