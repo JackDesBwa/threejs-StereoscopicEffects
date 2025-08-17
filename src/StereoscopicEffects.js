@@ -17,13 +17,13 @@ const commonFragH = `
 
 export const SideBySideStereoEffect = function(renderer, strenderer, cross, squeeze, tab) {
 	const _sz = new T.Vector2();
-	let _cross, _tab;
+	strenderer.stereoCamera.aspect = squeeze ? 1 : (tab ? 2 : 0.5);
 
 	this.render = function(scene, camera) {
 		renderer.getSize(_sz);
 		renderer.setScissorTest(true);
 
-		if (_tab) {
+		if (tab) {
 			_sz.height /= 2;
 
 			renderer.setScissor(0, 0, _sz.width, _sz.height);
@@ -32,7 +32,7 @@ export const SideBySideStereoEffect = function(renderer, strenderer, cross, sque
 
 			renderer.setScissor(0, _sz.height, _sz.width, _sz.height);
 			renderer.setViewport(0, _sz.height, _sz.width, _sz.height);
-			renderer.render(scene, _cross ? strenderer.stereoCamera.cameraR : strenderer.stereoCamera.cameraL);
+			renderer.render(scene, cross ? strenderer.stereoCamera.cameraR : strenderer.stereoCamera.cameraL);
 
 		} else {
 			_sz.width /= 2;
@@ -43,7 +43,7 @@ export const SideBySideStereoEffect = function(renderer, strenderer, cross, sque
 
 			renderer.setScissor(_sz.width, 0, _sz.width, _sz.height);
 			renderer.setViewport(_sz.width, 0, _sz.width, _sz.height);
-			renderer.render(scene, _cross ? strenderer.stereoCamera.cameraL : strenderer.stereoCamera.cameraR);
+			renderer.render(scene, cross ? strenderer.stereoCamera.cameraL : strenderer.stereoCamera.cameraR);
 		}
 
 		renderer.setScissorTest(false);
@@ -55,13 +55,6 @@ export const SideBySideStereoEffect = function(renderer, strenderer, cross, sque
 		renderer.setViewport(0, 0, _sz.width, _sz.height);
 		strenderer.stereoCamera.aspect = 1;
 	};
-
-	this.setFormat = function(cross, squeeze, tab) {
-		_cross = cross;
-		strenderer.stereoCamera.aspect = squeeze ? 1 : (tab ? 2 : 0.5);
-		_tab = tab;
-	}
-	this.setFormat(cross, squeeze, tab);
 };
 
 export const InterleavedStereoEffect = function (renderer, strenderer, dir) {
@@ -306,24 +299,21 @@ export const AnaglyphStereoEffect = function (renderer, strenderer, method) {
 		_material.dispose();
 	};
 
-	this.setMethod = function(method) {
+	const setMethod = function(method) {
 		method = Number(method);
 		if (method < 0 || method >= _anaglyphs.length || isNaN(method)) method = 1;
 		_material.uniforms.ml.value = _anaglyphs[method][0];
 		_material.uniforms.mr.value = _anaglyphs[method][1];
 	}
 
-	this.setMethod(method);
+	setMethod(method);
 };
 
 export const SingleViewStereoEffect = function (renderer, strenderer, cross) {
-	let _cross;
 	this.render = function(scene, camera) {
-		renderer.render(scene, _cross ? strenderer.stereoCamera.cameraR : strenderer.stereoCamera.cameraL);
+		renderer.render(scene, cross ? strenderer.stereoCamera.cameraR : strenderer.stereoCamera.cameraL);
 	};
 	this.dispose = function () { };
-	this.setCross = function(cross) { _cross = cross; }
-	this.setCross(cross);
 };
 
 export const StereoscopicEffectsRenderer = function(renderer) {
