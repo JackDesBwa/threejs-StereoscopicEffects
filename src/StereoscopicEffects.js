@@ -12,7 +12,8 @@ const commonFragH = `
 	uniform sampler2D tl;
 	uniform sampler2D tr;
 	varying vec2 vUv;
-	vec4 c(sampler2D t) { return sRGBTransferOETF(texture2D(t, vUv)); }
+	vec4 c(sampler2D t, vec2 uv) { return sRGBTransferOETF(texture2D(t, uv)); }
+	vec4 c(sampler2D t) { return c(t, vUv); }
 `;
 
 export const SideBySideStereoEffect = function(renderer, strenderer, cross, squeeze, tab) {
@@ -132,11 +133,11 @@ export const MirroredStereoEffect = function (renderer, strenderer, dir) {
 				if (uv.x <= 0.5) {
 					uv.x = uv.x + 0.25;
 					if (invl) uv.x = 1.0 - uv.x;
-					gl_FragColor = c(tl);
+					gl_FragColor = c(tl, uv);
 				} else {
 					uv.x = uv.x - 0.25;
 					if (invr) uv.x = 1.0 - uv.x;
-					gl_FragColor = c(tr);
+					gl_FragColor = c(tr, uv);
 				}
 			}`
 	});
