@@ -333,8 +333,8 @@ const StereoscopicEffectsRenderer = function(renderer) {
 	this.bufferR = this.bufferL.clone();
 }
 
-export const StereoscopicEffects = function (three, renderer, effect) {
-	T = three;
+export const StereoscopicEffects = function (renderer, effect) {
+	if (!T) throw new Error("StereoscopicEffects: no three.js provided");
 	const sr = new StereoscopicEffectsRenderer(renderer);
 	let _effect = new SingleViewStereoEffect(sr);
 
@@ -404,6 +404,10 @@ export const StereoscopicEffects = function (three, renderer, effect) {
 
 	this.setEffect(effect);
 };
+
+StereoscopicEffects.setThreeJS = function(t) {
+	T = t;
+}
 
 StereoscopicEffects.effectsList = function() {
 	const ret = [];
