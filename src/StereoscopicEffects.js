@@ -16,6 +16,36 @@ const commonFragH = `
 	vec4 c(sampler2D t) { return c(t, vUv); }
 `;
 
+const makeMultiRender = function(sr, obj, material) {
+	const _plane = new T.Mesh(new T.PlaneGeometry(2, 2), material);
+	const _mixscene = new T.Scene();
+	_mixscene.add(_plane);
+
+	obj.render = function(scene) {
+		const r = sr.r;
+		const originalRenderTarget = r.getRenderTarget();
+
+
+		r.setRenderTarget(sr.bufferL);
+		r.clear();
+		r.render(scene, sr.stereoCamera.cameraL);
+
+		r.setRenderTarget(sr.bufferR);
+		r.clear();
+		r.render(scene, sr.stereoCamera.cameraR);
+
+		r.setRenderTarget(null);
+		r.render(_mixscene, sr.orthoCamera);
+
+		r.setRenderTarget(originalRenderTarget);
+	};
+
+	obj.dispose = function () {
+		_plane.geometry.dispose();
+		material.dispose();
+	};
+}
+
 const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
 	const _sz = new T.Vector2();
 	sr.stereoCamera.aspect = squeeze ? 1 : (tab ? 2 : 0.5);
@@ -89,33 +119,7 @@ const InterleavedStereoEffect = function (sr, dir) {
 			}`
 	});
 
-	const _mesh = new T.Mesh(new T.PlaneGeometry(2, 2), _material);
-	const _scene = new T.Scene();
-	_scene.add(_mesh);
-
-	this.render = function(scene) {
-		const r = sr.r;
-		const originalRenderTarget = r.getRenderTarget();
-
-
-		r.setRenderTarget(sr.bufferL);
-		r.clear();
-		r.render(scene, sr.stereoCamera.cameraL);
-
-		r.setRenderTarget(sr.bufferR);
-		r.clear();
-		r.render(scene, sr.stereoCamera.cameraR);
-
-		r.setRenderTarget(null);
-		r.render(_scene, sr.orthoCamera);
-
-		r.setRenderTarget(originalRenderTarget);
-	};
-
-	this.dispose = function () {
-		_mesh.geometry.dispose();
-		_material.dispose();
-	};
+	makeMultiRender(sr, this, _material);
 };
 
 const MirroredStereoEffect = function (sr, dir) {
@@ -145,32 +149,7 @@ const MirroredStereoEffect = function (sr, dir) {
 			}`
 	});
 
-	const _mesh = new T.Mesh(new T.PlaneGeometry(2, 2), _material);
-	const _scene = new T.Scene();
-	_scene.add(_mesh);
-
-	this.render = function(scene) {
-		const r = sr.r;
-		const originalRenderTarget = r.getRenderTarget();
-
-		r.setRenderTarget(sr.bufferL);
-		r.clear();
-		r.render(scene, sr.stereoCamera.cameraL);
-
-		r.setRenderTarget(sr.bufferR);
-		r.clear();
-		r.render(scene, sr.stereoCamera.cameraR);
-
-		r.setRenderTarget(null);
-		r.render(_scene, sr.orthoCamera);
-
-		r.setRenderTarget(originalRenderTarget);
-	};
-
-	this.dispose = function () {
-		_mesh.geometry.dispose();
-		_material.dispose();
-	};
+	makeMultiRender(sr, this, _material);
 };
 
 const AnaglyphStereoEffect = function (sr, method) {
@@ -278,32 +257,7 @@ const AnaglyphStereoEffect = function (sr, method) {
 		_anaglyphGray_gm, _anaglyphHalfColors_gm, _anaglyphFullColors_gm, _anaglyphDubois_gm
 	];
 
-	const _mesh = new T.Mesh(new T.PlaneGeometry(2, 2), _material);
-	const _scene = new T.Scene();
-	_scene.add(_mesh);
-
-	this.render = function(scene) {
-		const r = sr.r;
-		const originalRenderTarget = r.getRenderTarget();
-
-		r.setRenderTarget(sr.bufferL);
-		r.clear();
-		r.render(scene, sr.stereoCamera.cameraL);
-
-		r.setRenderTarget(sr.bufferR);
-		r.clear();
-		r.render(scene, sr.stereoCamera.cameraR);
-
-		r.setRenderTarget(null);
-		r.render(_scene, sr.orthoCamera);
-
-		r.setRenderTarget(originalRenderTarget);
-	};
-
-	this.dispose = function () {
-		_mesh.geometry.dispose();
-		_material.dispose();
-	};
+	makeMultiRender(sr, this, _material);
 
 	const setMethod = function(method) {
 		method = Number(method);
