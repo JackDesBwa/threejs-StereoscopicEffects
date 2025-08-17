@@ -16,7 +16,7 @@ const commonFragH = `
 	vec4 c(sampler2D t) { return c(t, vUv); }
 `;
 
-export const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
+const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
 	const _sz = new T.Vector2();
 	sr.stereoCamera.aspect = squeeze ? 1 : (tab ? 2 : 0.5);
 
@@ -60,7 +60,7 @@ export const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
 	};
 };
 
-export const InterleavedStereoEffect = function (sr, dir) {
+const InterleavedStereoEffect = function (sr, dir) {
 	const _material = new T.ShaderMaterial({
 		uniforms: {
 			"tl": { value: sr.bufferL.texture },
@@ -118,7 +118,7 @@ export const InterleavedStereoEffect = function (sr, dir) {
 	};
 };
 
-export const MirroredStereoEffect = function (sr, dir) {
+const MirroredStereoEffect = function (sr, dir) {
 	const _material = new T.ShaderMaterial({
 		uniforms: {
 			"tl": { value: sr.bufferL.texture },
@@ -173,7 +173,7 @@ export const MirroredStereoEffect = function (sr, dir) {
 	};
 };
 
-export const AnaglyphStereoEffect = function (sr, method) {
+const AnaglyphStereoEffect = function (sr, method) {
 	const M = function(a) {
 		return new T.Matrix3().fromArray(a).transpose()
 	};
@@ -315,14 +315,14 @@ export const AnaglyphStereoEffect = function (sr, method) {
 	setMethod(method);
 };
 
-export const SingleViewStereoEffect = function (sr, cross) {
+const SingleViewStereoEffect = function (sr, cross) {
 	this.render = function(scene) {
 		sr.r.render(scene, cross ? sr.stereoCamera.cameraR : sr.stereoCamera.cameraL);
 	};
 	this.dispose = function () { };
 };
 
-export const StereoscopicEffectsRenderer = function(renderer) {
+const StereoscopicEffectsRenderer = function(renderer) {
 	this.r = renderer;
 	this.stereoCamera = new T.StereoCamera();
 	this.orthoCamera = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
