@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { StereoscopicEffects } from 'threejs-StereoscopicEffects';
+StereoscopicEffects.setThreeJS(THREE);
 
 let scene, clock, cube, camera, renderer, controls, stereofx;
 
@@ -19,7 +20,7 @@ function init() {
 
 	renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setPixelRatio(window.devicePixelRatio);
-	stereofx = new StereoscopicEffects(THREE, renderer, defaultEffect);
+	stereofx = new StereoscopicEffects(renderer, defaultEffect);
 	stereofx.setSize(window.innerWidth, window.innerHeight);
 
 	controls = new OrbitControls(camera, renderer.domElement);
