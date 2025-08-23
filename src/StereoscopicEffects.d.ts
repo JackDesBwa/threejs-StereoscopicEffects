@@ -11,7 +11,6 @@ type EffectCategory = {
 }
 
 export namespace StereoscopicEffects {
-    function setThreeJS(t: any): void;
     function effectsList(): EffectCategory[];
     function effectsListSelect(name?: string): HTMLSelectElement;
 }

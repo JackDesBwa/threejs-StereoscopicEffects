@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { StereoscopicEffects } from 'threejs-StereoscopicEffects';
-StereoscopicEffects.setThreeJS(THREE);
 
 let scene, clock, cube, camera, renderer, controls, stereofx;
 

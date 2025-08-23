@@ -1,4 +1,4 @@
-let T = undefined;
+import * as T from 'three';
 
 const simpleVertexShader = `
 	varying vec2 vUv;
@@ -297,7 +297,6 @@ const StereoscopicEffectsRenderer = function(renderer) {
 };
 
 export const StereoscopicEffects = function (renderer, effect) {
-	if (!T) throw new Error("StereoscopicEffects: no three.js provided");
 	const sr = new StereoscopicEffectsRenderer(renderer);
 	let _effect = new SingleViewStereoEffect(sr);
 
@@ -367,10 +366,6 @@ export const StereoscopicEffects = function (renderer, effect) {
 
 	this.setEffect(effect);
 };
-
-StereoscopicEffects.setThreeJS = function(t) {
-	T = t;
-}
 
 StereoscopicEffects.effectsList = function() {
 	const ret = [];
