@@ -8,7 +8,7 @@ export default {
 	plugins: [
 		alias({
 			entries: [
-				{ find: 'threejs-StereoscopicEffects', replacement: './node_modules/threejs-stereoscopiceffects/src/StereoscopicEffects.js' },
+				{ find: 'threejs-stereoscopiceffects', replacement: './node_modules/threejs-stereoscopiceffects/src/StereoscopicEffects.js' },
 				{ find: 'three/addons', replacement: './node_modules/three/examples/jsm' },
 				{ find: 'three', replacement: './node_modules/three/build/three.module.js' }
 			]
