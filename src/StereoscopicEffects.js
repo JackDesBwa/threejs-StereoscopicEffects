@@ -250,7 +250,6 @@ const SingleViewStereoEffect = function (sr, cross) {
 	this.render = function(scene) {
 		sr.r.render(scene, cross ? sr.stereoCamera.cameraR : sr.stereoCamera.cameraL);
 	};
-	this.dispose = function () { };
 };
 
 const StereoscopicEffectsRenderer = function(renderer) {
@@ -290,14 +289,14 @@ export const StereoscopicEffects = function (renderer, effect) {
 	}
 
 	this.dispose = function () {
-		_effect.dispose();
+		_effect.dispose?.();
 	};
 
 	this.setEffect = function(effect) {
 		effect = Number(effect);
 		if (effect < 0 || isNaN(effect)) effect = 0;
 
-		_effect.dispose();
+		_effect.dispose?.();
 
 		if (effect < 2) {
 			_effect = new SingleViewStereoEffect(sr, effect);
