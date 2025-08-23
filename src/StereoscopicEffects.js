@@ -1,30 +1,37 @@
 import * as T from 'three';
 
-const simpleVertexShader = `
-	varying vec2 vUv;
-	void main() {
-		vUv = vec2(uv.x, uv.y);
-		gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-	}
-`;
-
-const commonFragH = `
-	uniform sampler2D tl;
-	uniform sampler2D tr;
-	varying vec2 vUv;
-	vec4 c(sampler2D t, vec2 uv) { return sRGBTransferOETF(texture2D(t, uv)); }
-	vec4 c(sampler2D t) { return c(t, vUv); }
-`;
-
-const makeMultiRender = function(sr, obj, material) {
-	const _plane = new T.Mesh(new T.PlaneGeometry(2, 2), material);
+const DuoFragStereoEffect = function(sr, fragMain) {
 	const _mixscene = new T.Scene();
-	_mixscene.add(_plane);
+	_mixscene.add(
+		new T.Mesh(
+			new T.PlaneGeometry(2, 2),
+			new T.ShaderMaterial({
+				uniforms: {
+					"tl": { value: sr.bufferL.texture },
+					"tr": { value: sr.bufferR.texture },
+				},
+				vertexShader: `
+					varying vec2 vUv;
+					void main() {
+						vUv = vec2(uv.x, uv.y);
+						gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+					}
+				`,
+				fragmentShader: `
+					uniform sampler2D tl;
+					uniform sampler2D tr;
+					varying vec2 vUv;
+					vec4 c(sampler2D t, vec2 uv) { return sRGBTransferOETF(texture2D(t, uv)); }
+					vec4 c(sampler2D t) { return c(t, vUv); }
+					void main() { ${fragMain} }
+				`,
+			})
+		)
+	);
 
-	obj.render = function(scene) {
+	this.render = function(scene) {
 		const r = sr.r;
 		const originalRenderTarget = r.getRenderTarget();
-
 
 		r.setRenderTarget(sr.bufferL);
 		r.clear();
@@ -40,9 +47,11 @@ const makeMultiRender = function(sr, obj, material) {
 		r.setRenderTarget(originalRenderTarget);
 	};
 
-	obj.dispose = function () {
-		_plane.geometry.dispose();
-		material.dispose();
+	this.dispose = function () {
+		_mixscene.children.forEach(c => {
+			c.geometry.dispose();
+			c.material.dispose();
+		});
 	};
 }
 
@@ -92,97 +101,46 @@ const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
 	};
 };
 
-const InterleavedStereoEffect = function (sr, dir) {
-	const _material = new T.ShaderMaterial({
-		uniforms: {
-			"tl": { value: sr.bufferL.texture },
-			"tr": { value: sr.bufferR.texture },
-			"inv": { value: ((dir & 1) == 1) ^ ((dir & 2) == 0) },
-			"dir": { value: ((dir & 2) == 2) },
-			"checkboard": { value: dir >= 4 }
-		},
-		vertexShader: simpleVertexShader,
-		fragmentShader: commonFragH + `
-			uniform bool dir;
-			uniform bool inv;
-			uniform bool checkboard;
+const fragMain_Interleaved = function (v) {
+	const inv = !!(((v & 1) == 1) ^ ((v & 2) == 0));
+	const dir = ((v & 2) == 2);
+	const checkboard = v >= 4;
+	return `
+		vec2 uv = vUv;
+		float coord = gl_FragCoord.y;
+		if (${dir}) coord = gl_FragCoord.x;
+		if (${checkboard}) coord = mod(gl_FragCoord.x, 2.0) + mod(gl_FragCoord.y, 2.0);
+		if (${inv}) coord += 1.0;
 
-			void main() {
-				vec2 uv = vUv;
-				float coord = gl_FragCoord.y;
-				if (dir) coord = gl_FragCoord.x;
-				if (checkboard) coord = mod(gl_FragCoord.x, 2.0) + mod(gl_FragCoord.y, 2.0);
-				if (inv) coord += 1.0;
-				if ((mod(coord, 2.0)) >= 1.0) {
-					gl_FragColor = c(tr);
-				} else {
-					gl_FragColor = c(tl);
-				}
-			}`
-	});
-
-	makeMultiRender(sr, this, _material);
+		if ((mod(coord, 2.0)) >= 1.0) {
+			gl_FragColor = c(tr);
+		} else {
+			gl_FragColor = c(tl);
+		}
+	`;
 };
 
-const MirroredStereoEffect = function (sr, dir) {
-	const _material = new T.ShaderMaterial({
-		uniforms: {
-			"tl": { value: sr.bufferL.texture },
-			"tr": { value: sr.bufferR.texture },
-			"invl": { value: ((dir & 1) == 1) },
-			"invr": { value: ((dir & 2) == 2) },
-		},
-		vertexShader: simpleVertexShader,
-		fragmentShader: commonFragH + `
-			uniform bool invl;
-			uniform bool invr;
-
-			void main() {
-				vec2 uv = vec2(vUv.x, vUv.y);
-				if (uv.x <= 0.5) {
-					uv.x = uv.x + 0.25;
-					if (invl) uv.x = 1.0 - uv.x;
-					gl_FragColor = c(tl, uv);
-				} else {
-					uv.x = uv.x - 0.25;
-					if (invr) uv.x = 1.0 - uv.x;
-					gl_FragColor = c(tr, uv);
-				}
-			}`
-	});
-
-	makeMultiRender(sr, this, _material);
+const fragMain_Mirrored = function (v) {
+	const invl = ((v & 1) == 1);
+	const invr = ((v & 2) == 2);
+	return `
+		vec2 uv = vec2(vUv.x, vUv.y);
+		if (uv.x <= 0.5) {
+			uv.x = uv.x + 0.25;
+			if (${invl}) uv.x = 1.0 - uv.x;
+			gl_FragColor = c(tl, uv);
+		} else {
+			uv.x = uv.x - 0.25;
+			if (${invr}) uv.x = 1.0 - uv.x;
+			gl_FragColor = c(tr, uv);
+		}
+	`;
 };
 
-const AnaglyphStereoEffect = function (sr, method) {
-	const _material = new T.ShaderMaterial({
-		uniforms: {
-			"tl": { value: sr.bufferL.texture },
-			"tr": { value: sr.bufferR.texture },
-			"ml": { value: null },
-			"mr": { value: null }
-		},
-		vertexShader: simpleVertexShader,
-		fragmentShader: commonFragH + `
-			uniform mat3 ml;
-			uniform mat3 mr;
-
-			void main() {
-				vec4 cl = c(tl);
-				vec4 cr = c(tr);
-				vec3 c = ml * cl.rgb + mr * cr.rgb;
-				gl_FragColor = vec4(
-						c.r, c.g, c.b,
-						max(cl.a, cr.a)
-				);
-			}`
-	});
-
-	makeMultiRender(sr, this, _material);
-
+const fragMain_Anaglyph = function (v) {
 	const getMatrices = m => {
 		const M = function(a) {
-			return new T.Matrix3().fromArray(a).transpose()
+			return 'mat3(' + (new T.Matrix3().fromArray(a).transpose()).elements.join(',')+')';
 		};
 		switch (m) {
 			case 0: // Grey RC
@@ -271,11 +229,21 @@ const AnaglyphStereoEffect = function (sr, method) {
 				];
 		}
 	}
-	method = Number(method);
-	if (method < 0 || method >= 12 || isNaN(method)) method = 1;
-	const _matrices = getMatrices(method)
-	_material.uniforms.ml.value = _matrices[0];
-	_material.uniforms.mr.value = _matrices[1];
+
+	v = Number(v);
+	if (v < 0 || v >= 12 || isNaN(v)) v = 1;
+	const [ml, mr] = getMatrices(v);
+	return `
+		vec4 cl = c(tl);
+		vec4 cr = c(tr);
+		mat3 ml = ${ml};
+		mat3 mr = ${mr};
+		vec3 c = ml * cl.rgb + mr * cr.rgb;
+		gl_FragColor = vec4(
+				c.r, c.g, c.b,
+				max(cl.a, cr.a)
+		);
+	`;
 };
 
 const SingleViewStereoEffect = function (sr, cross) {
@@ -344,19 +312,19 @@ export const StereoscopicEffects = function (renderer, effect) {
 		effect -= 8;
 
 		if (effect < 6) {
-			_effect = new InterleavedStereoEffect(sr, effect);
+			_effect = new DuoFragStereoEffect(sr, fragMain_Interleaved(effect));
 			return;
 		}
 		effect -= 6;
 
 		if (effect < 3) {
-			_effect = new MirroredStereoEffect(sr, effect+1);
+			_effect = new DuoFragStereoEffect(sr, fragMain_Mirrored(effect+1));
 			return;
 		}
 		effect -= 3;
 
 		if (effect < 12) {
-			_effect = new AnaglyphStereoEffect(sr, effect);
+			_effect = new DuoFragStereoEffect(sr, fragMain_Anaglyph(effect));
 			return;
 		}
 		effect -= 12;
