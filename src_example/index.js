@@ -45,7 +45,8 @@ function init() {
 		stereofx.setSize(window.innerWidth, window.innerHeight);
 	});
 
-	if (navigator.xr) {
+	if (navigator.xr) navigator.xr.isSessionSupported("immersive-vr").then(supported => {
+		if (!supported) return;
 		renderer.xr.enabled = true;
 		renderer.xr.setReferenceSpaceType('local');
 		const btn = document.createElement('button');
@@ -65,7 +66,7 @@ function init() {
 			});
 		};
 		document.body.appendChild(btn);
-	}
+	});
 
 	document.body.appendChild(renderer.domElement);
 }
