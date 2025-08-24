@@ -45,28 +45,35 @@ function init() {
 		stereofx.setSize(window.innerWidth, window.innerHeight);
 	});
 
-	if (navigator.xr) navigator.xr.isSessionSupported("immersive-vr").then(supported => {
-		if (!supported) return;
-		renderer.xr.enabled = true;
-		renderer.xr.setReferenceSpaceType('local');
-		const btn = document.createElement('button');
-		btn.innerText = 'Enter VR';
-		btn.style.position = 'absolute';
-		btn.style.top = 0;
-		btn.style.left = 0;
-		btn.onclick = () => {
-			navigator.xr.requestSession('immersive-vr').then(session => {
-				btn.style.display = 'none';
-				session.addEventListener("end", () => {
-					btn.style.display = 'block';
-					camera.position.set(0, 0, 0);
-					camera.lookAt(cube.position);
-				});
-				renderer.xr.setSession(session)
+	if (navigator.xr) {
+		const divXr = document.createElement('div');
+		Object.assign(divXr.style, { position: 'absolute', top: 0, left: 0 });
+		document.body.append(divXr);
+		const mkBtn = (label, xr) => {
+			navigator.xr.isSessionSupported('immersive-' + xr).then(supported => {
+				if (!supported) return;
+				renderer.xr.enabled = true;
+				renderer.xr.setReferenceSpaceType('local');
+
+				const btn = document.createElement('button');
+				btn.innerText = label;
+				btn.onclick = () => {
+					navigator.xr.requestSession('immersive-' + xr).then(session => {
+						divXr.style.display = 'none';
+						session.addEventListener("end", () => {
+							divXr.style.display = 'block';
+							camera.position.set(0, 0, 0);
+							camera.lookAt(cube.position);
+						});
+						renderer.xr.setSession(session)
+					});
+				};
+				divXr.append(btn);
 			});
 		};
-		document.body.appendChild(btn);
-	});
+		mkBtn('Enter VR', 'vr');
+		mkBtn('Enter AR', 'ar');
+	}
 
 	document.body.appendChild(renderer.domElement);
 }
