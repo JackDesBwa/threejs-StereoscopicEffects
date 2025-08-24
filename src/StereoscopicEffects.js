@@ -257,7 +257,7 @@ const StereoscopicEffectsRenderer = function(renderer) {
 
 export const StereoscopicEffects = function (renderer, initial_fx) {
 	const sr = new StereoscopicEffectsRenderer(renderer);
-	let stfx = new SingleViewStereoEffect(sr);
+	let stfx = null;
 
 	this.setEyeSeparation = function(sep) { sr.stereoCamera.eyeSep = sep; };
 
@@ -288,7 +288,7 @@ export const StereoscopicEffects = function (renderer, initial_fx) {
 		fx = Number(fx);
 		if (fx < 0 || isNaN(fx)) fx = 0;
 
-		stfx.dispose?.();
+		stfx?.dispose?.();
 
 		if (fx < 2) {
 			stfx = new SingleViewStereoEffect(sr, fx);
