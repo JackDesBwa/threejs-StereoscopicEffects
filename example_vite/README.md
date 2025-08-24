@@ -4,4 +4,6 @@ First start with `npm install` which will download dependancies (to be done only
 
 Note that you can run `VITE_REPOLIB=1 npm run dev` to serve StereoscopicEffects from the local repo instead of npm installed version.
 
+Note: you can create certificates with for example `mkcert -key-file key.pem -cert-file cert.pem localhost` to be able to test WebXR with HTTPS.
+
 Essentially, you have to create a StereoscopicEffects object and replace the call to the render function of the renderer by a call to the render function of this object. Do not forget to set the pixelRatio to the underlying renderer and the size to the effets manager for the internal buffers.
