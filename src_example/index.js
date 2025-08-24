@@ -10,12 +10,13 @@ function init() {
 
 	clock = new THREE.Clock();
 
-	cube = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshNormalMaterial());
-	cube.position.set(0, 0, -3);
+	cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshNormalMaterial());
+	cube.position.set(0, 0, -1);
 	scene.add(cube);
 
-	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.3, 30);
+	camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.3, 30);
 	camera.lookAt(cube.position);
+	camera.focus = 1;
 
 	renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setPixelRatio(window.devicePixelRatio);
@@ -80,7 +81,7 @@ function init() {
 
 function render() {
 	const dt = clock.getDelta();
-	const speed = 0.5;
+	const speed = 0.1;
 
 	cube.rotation.x -= dt * speed * 2;
 	cube.rotation.y -= dt * speed;
