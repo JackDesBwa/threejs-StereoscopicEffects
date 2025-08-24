@@ -1,8 +1,8 @@
 import * as T from 'three';
 
 const DuoFragStereoEffect = function(sr, fragMain) {
-	const _mixscene = new T.Scene();
-	_mixscene.add(
+	const mixscene = new T.Scene();
+	mixscene.add(
 		new T.Mesh(
 			new T.PlaneGeometry(2, 2),
 			new T.ShaderMaterial({
@@ -42,13 +42,13 @@ const DuoFragStereoEffect = function(sr, fragMain) {
 		r.render(scene, sr.stereoCamera.cameraR);
 
 		r.setRenderTarget(null);
-		r.render(_mixscene, sr.orthoCamera);
+		r.render(mixscene, sr.orthoCamera);
 
 		r.setRenderTarget(originalRenderTarget);
 	};
 
 	this.dispose = function () {
-		_mixscene.children.forEach(c => {
+		mixscene.children.forEach(c => {
 			c.geometry.dispose();
 			c.material.dispose();
 		});
@@ -56,12 +56,12 @@ const DuoFragStereoEffect = function(sr, fragMain) {
 }
 
 const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
-	const _sz = new T.Vector2();
+	const sz = new T.Vector2();
 	sr.stereoCamera.aspect = squeeze ? 1 : (tab ? 2 : 0.5);
 
 	this.render = function(scene) {
-		sr.r.getSize(_sz);
-		let w = _sz.width, h = _sz.height;
+		sr.r.getSize(sz);
+		let w = sz.width, h = sz.height;
 		if (tab) h /= 2; else w /= 2;
 
 		const cl = sr.stereoCamera.cameraL,
@@ -86,9 +86,9 @@ const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
 
 	this.dispose = function () {
 		const r = sr.r;
-		r.getSize(_sz);
-		r.setScissor(0, 0, _sz.width, _sz.height);
-		r.setViewport(0, 0, _sz.width, _sz.height);
+		r.getSize(sz);
+		r.setScissor(0, 0, sz.width, sz.height);
+		r.setViewport(0, 0, sz.width, sz.height);
 		sr.stereoCamera.aspect = 1;
 	};
 };
@@ -255,9 +255,9 @@ const StereoscopicEffectsRenderer = function(renderer) {
 	this.bufferR = this.bufferL.clone();
 };
 
-export const StereoscopicEffects = function (renderer, effect) {
+export const StereoscopicEffects = function (renderer, initial_fx) {
 	const sr = new StereoscopicEffectsRenderer(renderer);
-	let _effect = new SingleViewStereoEffect(sr);
+	let stfx = new SingleViewStereoEffect(sr);
 
 	this.setEyeSeparation = function(sep) { sr.stereoCamera.eyeSep = sep; };
 
@@ -276,54 +276,54 @@ export const StereoscopicEffects = function (renderer, effect) {
 			if (camera.parent === null) camera.updateMatrixWorld();
 			sr.stereoCamera.update(camera);
 			if (renderer.autoClear) renderer.clear();
-			_effect.render(scene);
+			stfx.render(scene);
 		}
 	}
 
 	this.dispose = function () {
-		_effect.dispose?.();
+		stfx.dispose?.();
 	};
 
-	this.setEffect = function(effect) {
-		effect = Number(effect);
-		if (effect < 0 || isNaN(effect)) effect = 0;
+	this.setEffect = function(fx) {
+		fx = Number(fx);
+		if (fx < 0 || isNaN(fx)) fx = 0;
 
-		_effect.dispose?.();
+		stfx.dispose?.();
 
-		if (effect < 2) {
-			_effect = new SingleViewStereoEffect(sr, effect);
+		if (fx < 2) {
+			stfx = new SingleViewStereoEffect(sr, fx);
 			return;
 		}
-		effect -= 2;
+		fx -= 2;
 
-		if (effect < 8) {
-			_effect = new SideBySideStereoEffect(sr, !!(effect & 1), !!(effect & 2), !!(effect & 4));
+		if (fx < 8) {
+			stfx = new SideBySideStereoEffect(sr, !!(fx & 1), !!(fx & 2), !!(fx & 4));
 			return;
 		}
-		effect -= 8;
+		fx -= 8;
 
-		if (effect < 6) {
-			_effect = new DuoFragStereoEffect(sr, fragMain_Interleaved(effect));
+		if (fx < 6) {
+			stfx = new DuoFragStereoEffect(sr, fragMain_Interleaved(fx));
 			return;
 		}
-		effect -= 6;
+		fx -= 6;
 
-		if (effect < 3) {
-			_effect = new DuoFragStereoEffect(sr, fragMain_Mirrored(effect+1));
+		if (fx < 3) {
+			stfx = new DuoFragStereoEffect(sr, fragMain_Mirrored(fx+1));
 			return;
 		}
-		effect -= 3;
+		fx -= 3;
 
-		if (effect < 12) {
-			_effect = new DuoFragStereoEffect(sr, fragMain_Anaglyph(effect));
+		if (fx < 12) {
+			stfx = new DuoFragStereoEffect(sr, fragMain_Anaglyph(fx));
 			return;
 		}
-		effect -= 12;
+		fx -= 12;
 
-		_effect = new SideBySideStereoEffect(sr);
+		stfx = new SideBySideStereoEffect(sr);
 	}
 
-	this.setEffect(effect);
+	this.setEffect(initial_fx);
 };
 
 StereoscopicEffects.effectsList = function() {
