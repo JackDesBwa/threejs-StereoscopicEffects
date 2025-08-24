@@ -60,34 +60,26 @@ const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
 	sr.stereoCamera.aspect = squeeze ? 1 : (tab ? 2 : 0.5);
 
 	this.render = function(scene) {
-		const r = sr.r;
-		const cl = sr.stereoCamera.cameraL, cr = sr.stereoCamera.cameraR;
-		r.getSize(_sz);
-		r.setScissorTest(true);
+		sr.r.getSize(_sz);
 		let w = _sz.width, h = _sz.height;
+		if (tab) h /= 2; else w /= 2;
 
-		if (tab) {
-			h /= 2;
+		const cl = sr.stereoCamera.cameraL,
+		      cr = sr.stereoCamera.cameraR,
+		      r = sr.r,
+		      inv = cross ^ tab,
+		      w2 = tab ? 0 : w,
+		      h2 = tab ? h : 0;
 
-			r.setScissor(0, 0, w, h);
-			r.setViewport(0, 0, w, h);
-			r.render(scene, cross ? cl : cr);
+		r.setScissorTest(true);
 
-			r.setScissor(0, h, w, h);
-			r.setViewport(0, h, w, h);
-			r.render(scene, cross ? cr : cl);
+		r.setScissor(0, 0, w, h);
+		r.setViewport(0, 0, w, h);
+		r.render(scene, inv ? cr : cl);
 
-		} else {
-			w /= 2;
-
-			r.setScissor(0, 0, w, h);
-			r.setViewport(0, 0, w, h);
-			r.render(scene, cross ? cr : cl);
-
-			r.setScissor(w, 0, w, h);
-			r.setViewport(w, 0, w, h);
-			r.render(scene, cross ? cl : cr);
-		}
+		r.setScissor(w2, h2, w, h);
+		r.setViewport(w2, h2, w, h);
+		r.render(scene, inv ? cl : cr);
 
 		r.setScissorTest(false);
 	};
@@ -305,7 +297,7 @@ export const StereoscopicEffects = function (renderer, effect) {
 		effect -= 2;
 
 		if (effect < 8) {
-			_effect = new SideBySideStereoEffect(sr, effect & 1, effect & 2, effect & 4);
+			_effect = new SideBySideStereoEffect(sr, !!(effect & 1), !!(effect & 2), !!(effect & 4));
 			return;
 		}
 		effect -= 8;
