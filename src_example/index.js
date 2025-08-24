@@ -46,10 +46,20 @@ function init() {
 		stereofx.setSize(window.innerWidth, window.innerHeight);
 	});
 
+	const divBtns = document.createElement('div');
+	Object.assign(divBtns.style, { position: 'absolute', top: 0, left: 0 });
+	document.body.append(divBtns);
+
+	if (renderer.domElement.requestFullscreen) {
+		const btn = document.createElement('button');
+		btn.innerText = 'Fullscreen';
+		btn.onclick = () => {
+			renderer.domElement.requestFullscreen();
+		}
+		divBtns.append(btn);
+	}
+
 	if (navigator.xr) {
-		const divXr = document.createElement('div');
-		Object.assign(divXr.style, { position: 'absolute', top: 0, left: 0 });
-		document.body.append(divXr);
 		const mkBtn = (label, xr) => {
 			navigator.xr.isSessionSupported('immersive-' + xr).then(supported => {
 				if (!supported) return;
@@ -60,16 +70,16 @@ function init() {
 				btn.innerText = label;
 				btn.onclick = () => {
 					navigator.xr.requestSession('immersive-' + xr).then(session => {
-						divXr.style.display = 'none';
+						divBtns.style.display = 'none';
 						session.addEventListener("end", () => {
-							divXr.style.display = 'block';
+							divBtns.style.display = 'block';
 							camera.position.set(0, 0, 0);
 							camera.lookAt(cube.position);
 						});
 						renderer.xr.setSession(session)
 					});
 				};
-				divXr.append(btn);
+				divBtns.append(btn);
 			});
 		};
 		mkBtn('Enter VR', 'vr');
