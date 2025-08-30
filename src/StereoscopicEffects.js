@@ -35,14 +35,14 @@ const DuoFragStereoEffect = function(sr, fragMain) {
 
 		r.setRenderTarget(sr.bufferL);
 		r.clear();
-		r.render(scene, sr.stereoCamera.cameraL);
+		sr.render(scene, sr.stereoCamera.cameraL);
 
 		r.setRenderTarget(sr.bufferR);
 		r.clear();
-		r.render(scene, sr.stereoCamera.cameraR);
+		sr.render(scene, sr.stereoCamera.cameraR);
 
 		r.setRenderTarget(null);
-		r.render(mixscene, sr.orthoCamera);
+		sr.render(mixscene, sr.orthoCamera);
 
 		r.setRenderTarget(originalRenderTarget);
 	};
@@ -75,11 +75,11 @@ const SideBySideStereoEffect = function(sr, cross, squeeze, tab) {
 
 		r.setScissor(0, 0, w, h);
 		r.setViewport(0, 0, w, h);
-		r.render(scene, inv ? cr : cl);
+		sr.render(scene, inv ? cr : cl);
 
 		r.setScissor(w2, h2, w, h);
 		r.setViewport(w2, h2, w, h);
-		r.render(scene, inv ? cl : cr);
+		sr.render(scene, inv ? cl : cr);
 
 		r.setScissorTest(false);
 	};
@@ -240,12 +240,13 @@ const fragMain_Anaglyph = function (v) {
 
 const SingleViewStereoEffect = function (sr, cross) {
 	this.render = function(scene) {
-		sr.r.render(scene, cross ? sr.stereoCamera.cameraR : sr.stereoCamera.cameraL);
+		sr.render(scene, cross ? sr.stereoCamera.cameraR : sr.stereoCamera.cameraL);
 	};
 };
 
 const StereoscopicEffectsRenderer = function(renderer) {
 	this.r = renderer;
+	this.render = this.r.render.bind(this.r);
 	this.stereoCamera = new T.StereoCamera();
 	this.orthoCamera = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 	this.bufferL = new T.WebGLRenderTarget(
@@ -270,7 +271,7 @@ export const StereoscopicEffects = function (renderer, initial_fx) {
 
 	this.render = function(scene, camera) {
 		if (('xr' in renderer) && renderer.xr.isPresenting) {
-			renderer.render(scene, camera);
+			sr.render(scene, camera);
 		} else {
 			scene.updateMatrixWorld();
 			if (camera.parent === null) camera.updateMatrixWorld();
