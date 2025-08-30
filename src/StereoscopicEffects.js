@@ -256,7 +256,8 @@ const StereoscopicEffectsRenderer = function(renderer) {
 	this.bufferR = this.bufferL.clone();
 };
 
-export const StereoscopicEffects = function (renderer, initial_fx) {
+export const StereoscopicEffects = function (conf) {
+	const { renderer, defaultEffect } = conf;
 	const sr = new StereoscopicEffectsRenderer(renderer);
 	let stfx = null;
 
@@ -325,7 +326,7 @@ export const StereoscopicEffects = function (renderer, initial_fx) {
 		stfx = new SideBySideStereoEffect(sr);
 	}
 
-	this.setEffect(initial_fx);
+	this.setEffect(defaultEffect);
 };
 
 StereoscopicEffects.effectsList = function() {

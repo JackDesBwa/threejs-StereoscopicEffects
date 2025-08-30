@@ -20,7 +20,7 @@ function init() {
 
 	renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setPixelRatio(window.devicePixelRatio);
-	stereofx = new StereoscopicEffects(renderer, defaultEffect);
+	stereofx = new StereoscopicEffects({ renderer, defaultEffect });
 	stereofx.setSize(window.innerWidth, window.innerHeight);
 
 	controls = new OrbitControls(camera, renderer.domElement);
