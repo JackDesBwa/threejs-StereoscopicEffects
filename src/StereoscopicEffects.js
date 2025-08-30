@@ -262,8 +262,9 @@ export const StereoscopicEffects = function (renderer, initial_fx) {
 
 	this.setEyeSeparation = function(sep) { sr.stereoCamera.eyeSep = sep; };
 
+	const rSetSize = sr.r.setSize.bind(sr.r);
 	this.setSize = function(width, height) {
-		renderer.setSize(width, height);
+		rSetSize(width, height);
 		const pixelRatio = renderer.getPixelRatio();
 		sr.bufferL.setSize(width * pixelRatio, height * pixelRatio);
 		sr.bufferR.setSize(width * pixelRatio, height * pixelRatio);
