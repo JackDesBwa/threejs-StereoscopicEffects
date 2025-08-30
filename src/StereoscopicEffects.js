@@ -250,7 +250,7 @@ const StereoscopicEffectsRenderer = function(renderer) {
 	this.stereoCamera = new T.StereoCamera();
 	this.orthoCamera = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 	this.bufferL = new T.WebGLRenderTarget(
-		renderer.width, renderer.height,
+		this.r.width, this.r.height,
 		{ minFilter: T.LinearFilter, magFilter: T.NearestFilter, format: T.RGBAFormat }
 	);
 	this.bufferR = this.bufferL.clone();
@@ -265,19 +265,19 @@ export const StereoscopicEffects = function (renderer, initial_fx) {
 	const rSetSize = sr.r.setSize.bind(sr.r);
 	this.setSize = function(width, height) {
 		rSetSize(width, height);
-		const pixelRatio = renderer.getPixelRatio();
+		const pixelRatio = sr.r.getPixelRatio();
 		sr.bufferL.setSize(width * pixelRatio, height * pixelRatio);
 		sr.bufferR.setSize(width * pixelRatio, height * pixelRatio);
 	};
 
 	this.render = function(scene, camera) {
-		if (('xr' in renderer) && renderer.xr.isPresenting) {
+		if (('xr' in sr.r) && sr.r.xr.isPresenting) {
 			sr.render(scene, camera);
 		} else {
 			scene.updateMatrixWorld();
 			if (camera.parent === null) camera.updateMatrixWorld();
 			sr.stereoCamera.update(camera);
-			if (renderer.autoClear) renderer.clear();
+			if (sr.r.autoClear) sr.r.clear();
 			stfx.render(scene);
 		}
 	}
