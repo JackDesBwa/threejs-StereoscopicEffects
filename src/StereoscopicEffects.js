@@ -257,7 +257,7 @@ const StereoscopicEffectsRenderer = function(renderer) {
 };
 
 export const StereoscopicEffects = function (conf) {
-	const { renderer, defaultEffect } = conf;
+	const { renderer, defaultEffect, inject } = conf;
 	const sr = new StereoscopicEffectsRenderer(renderer);
 	let stfx = null;
 
@@ -327,6 +327,12 @@ export const StereoscopicEffects = function (conf) {
 	}
 
 	this.setEffect(defaultEffect);
+
+	if (inject) {
+		sr.r.setSize = this.setSize;
+		sr.r.render = this.render;
+	}
+
 };
 
 StereoscopicEffects.effectsList = function() {
